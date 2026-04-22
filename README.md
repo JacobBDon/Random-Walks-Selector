@@ -1,5 +1,4 @@
 # Random-Walks-Selector
-Streamlined filtering and ranking tool for Chicago Booth Random Walks 2026.
 
 This project is a Streamlit-based web application designed to help incoming Chicago Booth students efficiently explore, compare, and rank Random Walks 2026 trips.
 
