@@ -8,4 +8,5 @@ The official Random Walks website provides rich information, but navigating acro
 This tool collects no data, and sessions are not saved. Refreshing the page will clear your session.
 
 Live app: [Insert your Streamlit URL here]
+
 Official website: https://www.randomwalksbooth.org/
