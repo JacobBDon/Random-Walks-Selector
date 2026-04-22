@@ -3,7 +3,7 @@ import pandas as pd
 import time
 
 tab1, tab2 = st.tabs(['Trip Selector', 'Itinerary Selector'])
-data = pd.read_excel(https://raw.githubusercontent.com/JacobBDon/Random-Walks-Selector/main/Continents.xlsx, index_col=False)
+data = pd.read_excel("https://raw.githubusercontent.com/JacobBDon/Random-Walks-Selector/main/Continents.xlsx", index_col=False)
 
 
 
