@@ -46,7 +46,7 @@ if "welcomed" not in st.session_state:
 
 @st.dialog("Welcome to the Random Walks 2026 Trip Selector!")
 def welcome_dialog():
-    st.write("To select a page, open the sidebar. To create a list of trips according to your selected criteria, use the Trip Selector. To view trip itineraries, use the Itinerary Selector. For an easy way to create your trip rankings (1-10 minutes), use the Easy Ranker.")
+    st.markdown("""To select a page, open the sidebar.\n\nTo create a list of trips according to your selected criteria, use the Trip Selector.\n\nTo view trip itineraries, use the Itinerary Selector.\n\nFor an easy way to create your trip rankings (1-10 minutes), use the Easy Ranker.")
     if st.button("Let's go!"):
         st.session_state["welcomed"] = True
         st.rerun()
