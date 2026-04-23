@@ -885,6 +885,7 @@ if tab == "Easy Ranker":
                     handle(1, 0)
     
             with cols[3]:
+                st.markdown("")
                 if st.button(right['Trip Name'].iloc[0], key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
                     handle(0, 1)
  
