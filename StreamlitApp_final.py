@@ -51,7 +51,7 @@ def welcome_dialog():
 	\n\nTo view trip itineraries, use the Itinerary Selector.
 	\n\nFor an easy way to create your trip rankings (1-10 minutes), use the Easy Ranker.
 	\n\nThis tool represents a fraction of the rich information provided by the Official Random Walks website.
-	\n\nFor trip leaders, as well as detailed tips and tricks for each itinerary, please visit https://www.randomwalksbooth.org/
+	\nFor trip leaders, as well as detailed tips and tricks for each itinerary, please visit https://www.randomwalksbooth.org/
 	\n\nThis tool collects no data, and sessions are cleared upon refresh.""")
     if st.button("Let's go!"):
         st.session_state["welcomed"] = True
