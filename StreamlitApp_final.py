@@ -506,10 +506,6 @@ if tab == "Easy Ranker":
  
     st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING" """)
  
-    # NOTE: st.set_page_config() must be called once at the very top of your script,
-    # not inside a tab. Move this line to the top of your main app file:
-    # st.set_page_config(layout="wide")
- 
     cols = st.columns([3,1,1,1,1,1,])
  
     with cols[0]:
@@ -597,7 +593,7 @@ if tab == "Easy Ranker":
         
                     grad[i] += (outcome - p)
                     grad[j] += ((1 - outcome) - (1 - p))
-        
+ 
                 for i in range(len(scores)):
                     scores[i] += lr * grad[i]
         
@@ -609,13 +605,10 @@ if tab == "Easy Ranker":
             min_r, max_r = min(values), max(values)
             if max_r == min_r:
                 return {k: 5.0 for k in ratings}
-            # Exaggerate by raising normalized value to a power < 1 compresses, > 1 spreads
-            # We use linear norm then apply an exaggeration curve
             normalized = {}
             for k, v in ratings.items():
-                linear = (v - min_r) / (max_r - min_r)  # 0 to 1
-                # Exaggerate: push scores away from the middle using power curve
-                exaggerated = linear ** 0.6  # pulls lower scores down more
+                linear = (v - min_r) / (max_r - min_r)
+                exaggerated = linear ** 0.6
                 normalized[k] = round(exaggerated * 10, 2)
             return normalized
  
@@ -683,8 +676,10 @@ if tab == "Easy Ranker":
                 other_ids = [i for i in st.session_state.ids if i != first]
                 return first, random.choice(other_ids)
 
-        
             # ADAPTIVE
+            if st.session_state.total_rounds >= int(len(trip_choices) * 5):
+                return None, None
+
             if random.random() < 0.2:
                 return random.sample(st.session_state.ids, 2)
         
@@ -710,11 +705,9 @@ if tab == "Easy Ranker":
             if st.session_state.mode == "full":
                 return True
         
-            # need enough history
             if len(hist) < 5:
                 return False
         
-            # compute average absolute rating movement
             diffs = []
             for i in range(1, len(hist)):
                 prev, curr = hist[i - 1], hist[i]
@@ -752,7 +745,6 @@ if tab == "Easy Ranker":
             n = len(st.session_state.trip_choices)
  
             st.markdown("**PROGRESS**")
-
             st.progress(1.0)
  
             reset_col1, reset_col2 = st.columns(2)
@@ -798,7 +790,6 @@ if tab == "Easy Ranker":
                     st.write(f"{rank}. {name} — {score} / 10")
  
             with chart_col:
-                # Bar chart sorted best-to-worst (top of list = top of chart)
                 bar_names = [row[1] for row in ranking_rows][::-1]
                 bar_scores = [row[2] for row in ranking_rows][::-1]
  
@@ -830,9 +821,9 @@ if tab == "Easy Ranker":
  
         if len(st.session_state.trip_choices) >= 2:
     
-            with cols[0]:
-                st.markdown("""**Select your preferred trip:**""")
-            
+            st.markdown("""**Select your preferred trip:**""")
+            btn_col1, btn_col2, btn_col3 = st.columns(3)
+
             left_id, right_id = pair
  
             left = st.session_state.trip_choices[left_id]
@@ -862,10 +853,8 @@ if tab == "Easy Ranker":
                     )
     
                 st.rerun()
- 
-            cols = st.columns([3,1,1,1,3])
-    
-            with cols[1]:
+
+            with btn_col1:
                 st.markdown("""
                 <style>
                 div.stButton > button {
@@ -880,19 +869,16 @@ if tab == "Easy Ranker":
                 }
                 </style>
                 """, unsafe_allow_html=True)
- 
                 if st.button(left['Trip Name'].iloc[0], key=f"leftbutton_{left_id}_{st.session_state.total_rounds}"):
                     handle(1, 0)
-    
-            with cols[3]:
-                st.markdown("")
-                if st.button(right['Trip Name'].iloc[0], key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
-                    handle(0, 1)
- 
-            with cols[2]:
-                st.markdown("")
+
+            with btn_col2:
                 if st.button("I can't decide", key=f"tiebutton_{st.session_state.total_rounds}"):
                     handle(0.5, 0.5)
+
+            with btn_col3:
+                if st.button(right['Trip Name'].iloc[0], key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
+                    handle(0, 1)
  
             n_prog = len(st.session_state.trip_choices)
             st.write("")
