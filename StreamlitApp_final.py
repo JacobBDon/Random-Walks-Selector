@@ -941,6 +941,8 @@ if tab == "Easy Ranker":
             with colsa[0]:
         
                 with st.container(border=True):
+
+					st.write(left['Trip Name'].iloc[0])
  
                     styled_df = (left[['Start Date','End Date','Number of Days','Price']]).style.set_table_styles([
                         {'selector': 'th', 'props': [('background-color', '#8B0000'), ('color', 'white')]}
@@ -998,6 +1000,8 @@ if tab == "Easy Ranker":
             with colsa[2]:
         
                 with st.container(border=True):
+
+					st.write(right['Trip Name'].iloc[0])
         
                     styled_df = (right[['Start Date','End Date','Number of Days','Price']]).style.set_table_styles([
                         {'selector': 'th', 'props': [('background-color', '#8B0000'), ('color', 'white')]}
