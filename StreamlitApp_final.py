@@ -782,7 +782,7 @@ if tab == "Easy Ranker":
                 norm_score = normalized[trip_id]
                 ranking_rows.append((i, trip_name, norm_score))
  
-            rank_col, chart_col = st.columns([1, 1])
+            rank_col, chart_col = st.columns([1, 2])
  
             with rank_col:
                 st.subheader("Final Ranking")
