@@ -37,7 +37,7 @@ tab = st.sidebar.radio(
     ["Trip Selector", "Itinerary Selector", "Easy Ranker"]
 )
 
-st.sidebar.caption(f"Copyright © {date.today().year} Jacob Don")
+st.sidebar.caption("Copyright © 2026 Jacob Don")
 
 categories = ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']
 
