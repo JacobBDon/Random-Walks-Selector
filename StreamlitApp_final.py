@@ -46,7 +46,11 @@ if "welcomed" not in st.session_state:
 
 @st.dialog("Welcome to the Random Walks 2026 Trip Selector!")
 def welcome_dialog():
-    st.markdown("""To select a page, open the sidebar.\n\nTo create a list of trips according to your selected criteria, use the Trip Selector.\n\nTo view trip itineraries, use the Itinerary Selector.\n\nFor an easy way to create your trip rankings (1-10 minutes), use the Easy Ranker.""")
+    st.markdown("""To select a page, open the sidebar.
+	\n\nTo create a list of trips according to your selected criteria, use the Trip Selector.
+	\n\nTo view trip itineraries, use the Itinerary Selector.
+	\n\nFor an easy way to create your trip rankings (1-10 minutes), use the Easy Ranker.
+	\n\nThis tool represents a fraction of the rich information provided by the Official Random Walks website. For trip leaders, as well as detailed tips and tricks for each itinerary, please visit https://www.randomwalksbooth.org/""")
     if st.button("Let's go!"):
         st.session_state["welcomed"] = True
         st.rerun()
