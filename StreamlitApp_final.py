@@ -41,7 +41,18 @@ st.sidebar.caption("Copyright © 2026 Jacob Don")
 
 categories = ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']
 
-st.dialog("Welcome!")
+if "welcomed" not in st.session_state:
+    st.session_state["welcomed"] = False
+
+@st.dialog("Welcome to the Random Walks 2026 Trip Selector!")
+def welcome_dialog():
+    st.write("To select a page, open the sidebar. To create a list of trips according to your selected criteria, use the Trip Selector. To view trip itineraries, use the Itinerary Selector. For an easy way to create your trip rankings (1-10 minutes), use the Easy Ranker.")
+    if st.button("Let's go!"):
+        st.session_state["welcomed"] = True
+        st.rerun()
+
+if not st.session_state["welcomed"]:
+    welcome_dialog()
 
 if tab == "Trip Selector":
 
