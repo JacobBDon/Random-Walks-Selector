@@ -885,21 +885,6 @@ if tab == "Easy Ranker":
                     handle(1, 0)
     
             with cols[3]:
-                st.markdown("""
-                <style>
-                div.stButton > button {
-                    background-color: #8B0000;
-                    color: white;
-                    border: none;
-                }
-    
-                div.stButton > button:hover {
-                    background-color: #A30000;
-                    color: white;
-                }
-                </style>
-                """, unsafe_allow_html=True)
-    
                 if st.button(right['Trip Name'].iloc[0], key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
                     handle(0, 1)
  
