@@ -41,6 +41,8 @@ st.sidebar.caption("Copyright © 2026 Jacob Don")
 
 categories = ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']
 
+st.dialog("Welcome!")
+
 if tab == "Trip Selector":
 
     st.set_page_config(layout="wide")
@@ -505,6 +507,8 @@ if tab == "Itinerary Selector":
                 st.plotly_chart(fig, key=f'{trip}2')
 
 if tab == "Easy Ranker":
+
+    st.set_page_config(layout="wide")
  
     st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING" """)
  
