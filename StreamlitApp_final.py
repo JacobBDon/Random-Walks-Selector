@@ -35,7 +35,9 @@ for col in ratingcols:
 tab = st.sidebar.radio(
     "Select a page",
     ["Trip Selector", "Itinerary Selector", "Easy Ranker"]
-).caption(f"Copyright © {date.today().year} Jacob Don")
+)
+
+st.sidebar.caption(f"Copyright © {date.today().year} Jacob Don")
 
 categories = ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']
 
