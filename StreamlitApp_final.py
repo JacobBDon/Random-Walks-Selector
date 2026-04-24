@@ -53,9 +53,7 @@ def welcome_dialog():
 	\n\nThis tool represents a fraction of the rich information provided by the Official Random Walks website.
 	\nFor trip leaders, as well as tips, tricks, and detailed information on each itinerary, please visit https://www.randomwalksbooth.org/
 	\n\nThis tool collects no data, and sessions are cleared upon refresh.""")
-    if st.button("Let's go!"):
-        st.session_state["welcomed"] = True
-        st.rerun()
+	st.session_state["welcomed"] = True
 
 if not st.session_state["welcomed"]:
     welcome_dialog()
