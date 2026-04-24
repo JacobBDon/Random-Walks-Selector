@@ -833,7 +833,9 @@ if tab == "Easy Ranker":
             return all(ts == top_sets[0] for ts in top_sets)
  
     # ------------------ Ranking UI ------------------
- 
+        if not st.session_state.get("initialized", False) or "pair_queue" not in st.session_state:
+            st.stop()
+			
         pair = smart_pair()
         no_more_pairs = (pair is None or pair == (None, None))
         stable = check_convergence()
