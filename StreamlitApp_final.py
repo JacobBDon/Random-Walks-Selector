@@ -584,9 +584,15 @@ if tab == "Easy Ranker":
             data_itin = data
  
         trips = data_itin['Trip Name'].unique().tolist()
+
+        if 'trip_multiselect' in st.session_state:
+            st.session_state['_saved_trip_multiselect'] = st.session_state['trip_multiselect']
+
+        if 'trip_multiselect' not in st.session_state and '_saved_trip_multiselect' in st.session_state:
+            st.session_state['trip_multiselect'] = st.session_state['_saved_trip_multiselect']
+       
  
-        placeh = 'Select trip to include in ranking'
-        countries = st.multiselect('Select trips', trips, placeholder=placeh, key='trip_multiselect')
+        countries = st.multiselect('Select trips', trips, placeholder='Select trip to include in ranking', key='trip_multiselect')
         
         data_itin = data_itin[data_itin['Trip Name'].isin(countries)]
  
