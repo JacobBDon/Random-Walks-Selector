@@ -840,7 +840,14 @@ if tab == "Easy Ranker":
         top7_stable = top_k_stable(7)
  
         if no_more_pairs:
- 
+			
+            if st.session_state.mode == "full" and st.session_state.full_history:
+                st.session_state.ratings = batch_refine(
+                    st.session_state.ratings,
+                    st.session_state.full_history,
+                    steps=200  # more steps for cleaner convergence
+                )
+            
             n = len(st.session_state.trip_choices)
  
             st.markdown("**PROGRESS**")
@@ -930,29 +937,31 @@ if tab == "Easy Ranker":
             right = st.session_state.trip_choices[right_id]
     
             def handle(score_left, score_right, _left_id=left_id, _right_id=right_id):
-                r1 = st.session_state.ratings[_left_id]
-                r2 = st.session_state.ratings[_right_id]
-    
-                st.session_state.ratings[_left_id] = elo_update(r1, r2, score_left)
-                st.session_state.ratings[_right_id] = elo_update(r2, r1, score_right)
-    
+                # Always record the result
                 st.session_state.match_counts[_left_id] += 1
                 st.session_state.match_counts[_right_id] += 1
-    
                 st.session_state.comparisons.add(tuple(sorted((_left_id, _right_id))))
                 st.session_state.total_rounds += 1
                 st.session_state.current_pair = None
-     
-                st.session_state.rating_history.append(st.session_state.ratings.copy())
                 st.session_state.full_history.append((_left_id, _right_id, score_left, score_right))
- 
-                # --- Periodic global refinement ---
-                if st.session_state.total_rounds % 20 == 0:
-                    st.session_state.ratings = batch_refine(
-                        st.session_state.ratings,
-                        st.session_state.full_history
-                    )
-    
+            
+                if st.session_state.mode == "full":
+                    # Don't do incremental Elo — batch solve at the end instead
+                    st.session_state.rating_history.append(st.session_state.ratings.copy())
+                else:
+                    # Incremental Elo for random/adaptive modes
+                    r1 = st.session_state.ratings[_left_id]
+                    r2 = st.session_state.ratings[_right_id]
+                    st.session_state.ratings[_left_id] = elo_update(r1, r2, score_left)
+                    st.session_state.ratings[_right_id] = elo_update(r2, r1, score_right)
+                    st.session_state.rating_history.append(st.session_state.ratings.copy())
+            
+                    if st.session_state.total_rounds % 20 == 0:
+                        st.session_state.ratings = batch_refine(
+                            st.session_state.ratings,
+                            st.session_state.full_history
+                        )
+            
                 st.rerun()
 
             with btn_col1:
