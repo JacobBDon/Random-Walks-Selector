@@ -93,9 +93,19 @@ if tab == "Trip Selector":
         with st.container(border=True):
     
             countries_nogo = st.multiselect(label="Select trips to exclude", options = data['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='')
-    
+
+		data['nogo'] = 0
+
+        for date in dates_nogo:
+            data.loc[(date >= data['Start Date']) & (date <= data['End Date']), 'nogo'] = 1
+
+		for trip in countries_nogo:
+        	data.loc[trip == data['Trip Name'], 'nogo'] = 1
     
         col1, col2 = st.columns([3,3])
+
+		data2 = data[data['nogo'] == 0]
+
 
         with col1:
             tripname = st.multiselect(label='Trip Name', options=data['Trip Name'].sort_values().unique().tolist(), placeholder='')
@@ -248,14 +258,6 @@ if tab == "Trip Selector":
     filtered_data_unique = filtered_data_final.drop_duplicates(["Trip Name"])
     filtered_data_unique['Start Date'] = filtered_data_unique['Start Date Final'].dt.date
     filtered_data_unique['End Date'] = filtered_data_unique['End Date Final'].dt.date
-
-    filtered_data_unique['nogo'] = 0
-
-    for date in dates_nogo:
-        filtered_data_unique.loc[(date >= filtered_data_unique['Start Date']) & (date <= filtered_data_unique['End Date']), 'nogo'] = 1
-
-    for trip in countries_nogo:
-        filtered_data_unique.loc[trip == filtered_data_unique['Trip Name'], 'nogo'] = 1
 
     if filtered_data_unique['nogo'].min() == 1:
         st.write("Sorry, all available trips contain under one of your block-out dates :(")
