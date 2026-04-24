@@ -99,7 +99,7 @@ if tab == "Trip Selector":
         for date in dates_nogo:
             data.loc[(date >= data['Start Date']) & (date <= data['End Date']), 'nogo'] = 1
 
-		for trip in countries_nogo:
+        for trip in countries_nogo:
         	data.loc[trip == data['Trip Name'], 'nogo'] = 1
     
         col1, col2 = st.columns([3,3])
