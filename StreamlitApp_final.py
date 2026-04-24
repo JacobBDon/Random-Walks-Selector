@@ -68,7 +68,7 @@ if tab == "Trip Selector":
         st.session_state['_saved_ts_activitylevel'] = st.session_state['ts_activitylevel']
     if 'ts_pricerange' in st.session_state:
         st.session_state['_saved_ts_pricerange'] = st.session_state['ts_pricerange']
-   if 'ts_priceslider' in st.session_state:
+    if 'ts_priceslider' in st.session_state:
         st.session_state['_saved_ts_priceslider'] = st.session_state['ts_priceslider']
     if 'ts_sortselect_ratings' in st.session_state:
         st.session_state['_saved_ts_sortselect_ratings'] = st.session_state['ts_sortselect_ratings']
