@@ -88,8 +88,8 @@ if tab == "Trip Selector":
              'ts_continent', 'ts_triptype', 'ts_numdays', 'ts_activitylevel',
              'ts_pricerange', 'ts_price_slider', 'ts_sortselect_ratings',
              'ts_sortselect_noratings', 'ts_seetrips', 'ts_chart_tripname']:
-    if _key not in st.session_state and f'_saved_{_key}' in st.session_state:
-        st.session_state[_key] = st.session_state[f'_saved_{_key}']
+        if _key not in st.session_state and f'_saved_{_key}' in st.session_state:
+            st.session_state[_key] = st.session_state[f'_saved_{_key}']
 		
     cols_main = st.columns([2,3])	
     with cols_main[0]:
