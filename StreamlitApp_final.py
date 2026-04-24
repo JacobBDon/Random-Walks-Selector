@@ -586,7 +586,7 @@ if tab == "Easy Ranker":
  
     st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until top-5 rankings stabilize""")
  
-    cols = st.columns([3,1,1,1,1,1,3])
+    cols = st.columns([3,1,1,1,1,1,])
  
     with cols[0]:
  
@@ -712,6 +712,12 @@ if tab == "Easy Ranker":
             st.session_state.rating_history = []
             st.session_state.full_history = []
             st.session_state.current_pair = None
+
+            # Pre-build and shuffle the full pair queue for all modes
+            all_ids = list(range(len(trip_choices)))
+            all_pairs = list(combinations(all_ids, 2))
+            random.shuffle(all_pairs)
+            st.session_state.pair_queue = all_pairs
         
             n = len(trip_choices)
             if n <= 7:
@@ -732,7 +738,7 @@ if tab == "Easy Ranker":
             st.session_state.mode = "random"
         else:
             st.session_state.mode = "adaptive"
- 
+
     # ------------------ Pair Selection ------------------
         def smart_pair():
             trip_choices = st.session_state.trip_choices
@@ -740,89 +746,63 @@ if tab == "Easy Ranker":
             counts = st.session_state.match_counts
             comps = st.session_state.comparisons
             mode = st.session_state.mode
+            pair_queue = st.session_state.pair_queue
         
             if len(trip_choices) < 2:
                 return None, None
- 
-            st.session_state.ids = list(range(len(trip_choices)))
-        
-            # FULL
-            if mode == "full":
-                st.session_state.all_pairs = list(combinations(st.session_state.ids, 2))
-                remaining = [
-                    p for p in st.session_state.all_pairs
-                    if tuple(sorted(p)) not in comps
-                    and tuple(sorted(p)) != tuple(sorted(st.session_state.get("current_pair") or (-1,-1)))
-                ]
-                return random.choice(remaining) if remaining else (None, None)
-                if not remaining:
-                    # all pairs answered or only current pair left — clear current and finish
-                    st.session_state.current_pair = None
-                    return random.choice([p for p in st.session_state.all_pairs if tuple(sorted(p)) not in comps]) if len(comps) < len(st.session_state.all_pairs) else (None, None)
-                chosen = random.choice(remaining)
-                st.session_state.current_pair = chosen
-                return chosen
-        
-        # RANDOM
-            if mode == "random":
-                target = int(len(trip_choices) * 4)
-                if st.session_state.total_rounds >= target:
-                    return None, None
 
-                ids_sorted = sorted(st.session_state.ids, key=lambda x: counts[x])
+            # All modes: only pick pairs not yet seen
+            remaining = [p for p in pair_queue if tuple(sorted(p)) not in comps]
 
-                # Guard: if the same trip has been `first` 3 times in a row,
-                # rotate to the next least-seen trip instead
-                last_lefts = st.session_state.get("last_lefts", [])
-                for candidate in ids_sorted:
-                    if last_lefts.count(candidate) < 3:
-                        first = candidate
-                        break
-                else:
-                    first = ids_sorted[0]  # fallback
-
-                # Guard: avoid showing the exact same pair back-to-back
-                last_pair = st.session_state.get("last_pair", None)
-                other_ids = [i for i in st.session_state.ids if i != first]
-                if len(other_ids) > 1 and last_pair is not None:
-                    last_opponent = last_pair[1] if last_pair[0] == first else last_pair[0]
-                    filtered = [i for i in other_ids if i != last_opponent]
-                    second = random.choice(filtered if filtered else other_ids)
-                else:
-                    second = random.choice(other_ids)
-
-                st.session_state.last_lefts = (last_lefts + [first])[-6:]
-                st.session_state.last_pair = (first, second)
-                return first, second
-
-            # ADAPTIVE
-            if st.session_state.total_rounds >= int(len(trip_choices) * 5):
+            if not remaining:
                 return None, None
 
+            # FULL: just take the next unseen pair in queue order
+            if mode == "full":
+                return remaining[0]
+
+            # RANDOM: pick the unseen pair that involves the least-seen trip
+            if mode == "random":
+                target = int(len(trip_choices) * 4)
+                if st.session_state.total_rounds >= target and len(remaining) > 0:
+                    # Still show remaining pairs even past target so nothing repeats
+                    pass
+
+                ids_sorted = sorted(list(range(len(trip_choices))), key=lambda x: counts[x])
+                for candidate in ids_sorted:
+                    candidate_pairs = [p for p in remaining if candidate in p]
+                    if candidate_pairs:
+                        return candidate_pairs[0]
+                return remaining[0]
+
+            # ADAPTIVE: pick unseen pair that maximises uncertainty / rating closeness
             if random.random() < 0.2:
-                return random.sample(st.session_state.ids, 2)
-        
+                return random.choice(remaining)
+
             best_pair = None
             best_score = -1
-        
-            for _ in range(50):
-                a, b = random.sample(st.session_state.ids, 2)
+
+            sample = remaining if len(remaining) <= 50 else random.sample(remaining, 50)
+            for p in sample:
+                a, b = p
                 rating_gap = abs(ratings[a] - ratings[b])
                 unc = uncertainty(counts[a]) + uncertainty(counts[b])
                 score = unc / (1 + rating_gap)
-        
                 if score > best_score:
                     best_score = score
-                    best_pair = (a, b)
-        
-            return best_pair
+                    best_pair = p
+
+            return best_pair if best_pair else remaining[0]
         
         # ------------------ Convergence Check ------------------
         def check_convergence():
             hist = st.session_state.rating_history
- 
+            comps = st.session_state.comparisons
+            pair_queue = st.session_state.pair_queue
+            remaining = [p for p in pair_queue if tuple(sorted(p)) not in comps]
+
             if st.session_state.mode == "full":
-                return True
+                return len(remaining) == 0
         
             if len(hist) < 5:
                 return False
@@ -865,7 +845,7 @@ if tab == "Easy Ranker":
                 st.session_state.ratings = batch_refine(
                     st.session_state.ratings,
                     st.session_state.full_history,
-                    steps=200  # more steps for cleaner convergence
+                    steps=200
                 )
             
             n = len(st.session_state.trip_choices)
@@ -878,7 +858,7 @@ if tab == "Easy Ranker":
                 if st.button("↺ Start Over (Same Trips)"):
                     for k in ["initialized", "ratings", "match_counts", "comparisons",
                               "total_rounds", "rating_history", "full_history", "ids", "all_pairs",
-							 "last_lefts", "last_pair", "current_pair"]:
+                              "last_lefts", "last_pair", "current_pair", "pair_queue"]:
                         st.session_state.pop(k, None)
                     st.session_state.initialized = False
                     st.session_state.completed = False
@@ -887,7 +867,8 @@ if tab == "Easy Ranker":
                 if st.button("↺ Full Reset (Choose New Trips)"):
                     for k in ["begin", "completed", "initialized", "trip_choices", "ratings",
                               "match_counts", "comparisons", "total_rounds", "rating_history",
-                              "full_history", "ids", "all_pairs", "mode", "last_lefts", "last_pair", "current_pair"]:
+                              "full_history", "ids", "all_pairs", "mode", "last_lefts", "last_pair",
+                              "current_pair", "pair_queue"]:
                         st.session_state.pop(k, None)
                     st.rerun()
  
@@ -966,10 +947,8 @@ if tab == "Easy Ranker":
                 st.session_state.full_history.append((_left_id, _right_id, score_left, score_right))
             
                 if st.session_state.mode == "full":
-                    # Don't do incremental Elo — batch solve at the end instead
                     st.session_state.rating_history.append(st.session_state.ratings.copy())
                 else:
-                    # Incremental Elo for random/adaptive modes
                     r1 = st.session_state.ratings[_left_id]
                     r2 = st.session_state.ratings[_right_id]
                     st.session_state.ratings[_left_id] = elo_update(r1, r2, score_left)
@@ -1011,22 +990,18 @@ if tab == "Easy Ranker":
                     handle(0, 1)
  
             n_prog = len(st.session_state.trip_choices)
+            total_possible = n_prog * (n_prog - 1) // 2
             st.write("")
             st.caption("PROGRESS")
-
-            if st.session_state.mode == "full":
-                total_possible = n_prog * (n_prog - 1) // 2
-                progress = len(st.session_state.comparisons) / total_possible
-            else:
-                target = int(n_prog * (4 if n_prog <= 20 else 5))
-                progress = min(st.session_state.total_rounds / target, 1.0)
+            progress = len(st.session_state.comparisons) / total_possible
             st.progress(progress)
  
             reset_col1, reset_col2 = st.columns(2)
             with reset_col1:
                 if st.button("↺ Start Over (Same Trips)"):
                     for k in ["initialized", "ratings", "match_counts", "comparisons",
-                              "total_rounds", "rating_history", "full_history", "ids", "all_pairs"]:
+                              "total_rounds", "rating_history", "full_history", "ids", "all_pairs",
+                              "pair_queue"]:
                         st.session_state.pop(k, None)
                     st.session_state.initialized = False
                     st.session_state.completed = False
@@ -1035,7 +1010,7 @@ if tab == "Easy Ranker":
                 if st.button("↺ Full Reset (Choose New Trips)"):
                     for k in ["begin", "completed", "initialized", "trip_choices", "ratings",
                               "match_counts", "comparisons", "total_rounds", "rating_history",
-                              "full_history", "ids", "all_pairs", "mode"]:
+                              "full_history", "ids", "all_pairs", "mode", "pair_queue"]:
                         st.session_state.pop(k, None)
                     st.rerun()
         
@@ -1162,5 +1137,4 @@ if tab == "Easy Ranker":
  
         else:
             st.write("Please select at least two trips.")
-
                 
