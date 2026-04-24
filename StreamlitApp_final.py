@@ -114,16 +114,16 @@ if tab == "Trip Selector":
 
 
         with col1:
-            tripname = st.multiselect(label='Trip Name', options=data['Trip Name'].sort_values().unique().tolist(), placeholder='')
+            tripname = st.multiselect(label='Trip Name', options=data2['Trip Name'].sort_values().unique().tolist(), placeholder='')
 
         with col2:
-            continent = st.multiselect(label = 'Continent', options=data['Continent'].sort_values().unique().tolist(), placeholder='')
+            continent = st.multiselect(label = 'Continent', options=data2['Continent'].sort_values().unique().tolist(), placeholder='')
 
         with col1:
-            triptype = st.multiselect(label='Trip Type', options=data['Trip Type'].sort_values().unique().tolist(), placeholder='')
+            triptype = st.multiselect(label='Trip Type', options=data2['Trip Type'].sort_values().unique().tolist(), placeholder='')
 
         with col2:
-            numdays = st.multiselect(label='Number of Days', options=data['Number of Days'].sort_values().unique().tolist(), placeholder='')
+            numdays = st.multiselect(label='Number of Days', options=data2['Number of Days'].sort_values().unique().tolist(), placeholder='')
 
         ratings_selected = False
         ratings = []
@@ -169,11 +169,11 @@ if tab == "Trip Selector":
             data['keeprating_and'] = (data['keeprating1'] | data['missingrating1']) & (data['keeprating2'] | data['missingrating2']) & (data['keeprating3'] | data['missingrating3']) & (data['keeprating4'] | data['missingrating4']) & (data['keeprating5'] | data['missingrating5'])
             ratings_selected = True
 
-    filtered_data = data
+    filtered_data = data2
 
     if (filtertype == 'Filter (keep trips that share ALL selected criteria)') and ratings_selected:
 
-        filtered_data = data[(
+        filtered_data = data2[(
                              ((data['Continent'].isin(continent) | (not continent))
                              & (data['Trip Name'].isin(tripname) | (not tripname))
                              & (data['Number of Days'].isin(numdays) | (not numdays))
@@ -184,7 +184,7 @@ if tab == "Trip Selector":
 
 
     elif (filtertype == 'Compare (show trips that have ANY of the selected criteria)') and ratings_selected:
-        filtered_data = data[(
+        filtered_data = data2[(
                              (data['Continent'].isin(continent))
                              | (data['Trip Name'].isin(tripname))
                              | (data['keeprating_or'] == 1)
@@ -194,7 +194,7 @@ if tab == "Trip Selector":
 
     elif (filtertype == 'Filter (keep trips that share ALL selected criteria)') and not ratings_selected:
 
-        filtered_data = data[(
+        filtered_data = data2[(
                              ((data['Continent'].isin(continent) | (not continent))
                              & (data['Trip Name'].isin(tripname) | (not tripname))
                              & (data['Number of Days'].isin(numdays) | (not numdays))
@@ -204,7 +204,7 @@ if tab == "Trip Selector":
 
 
     elif (filtertype == 'Compare (show trips that have ANY of the selected criteria)') and not ratings_selected:
-        filtered_data = data[(
+        filtered_data = data2[(
                              (data['Continent'].isin(continent))
                              | (data['Trip Name'].isin(tripname))
                              | (data['Number of Days'].isin(numdays))
