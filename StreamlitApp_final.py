@@ -585,7 +585,7 @@ if tab == "Easy Ranker":
 
     data = data.copy()
  
-    st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until rankings stabilize (up to top-7)""")
+    st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until top-5 rankings stabilize""")
  
     cols = st.columns([3,1,1,1,1,1,])
  
@@ -838,8 +838,8 @@ if tab == "Easy Ranker":
         
             return avg_recent_movement < 1.0
         
-        # --- Top-7 Stability Check ---
-        def top_k_stable(k=7, window=4):
+        # --- Top-5 Stability Check ---
+        def top_k_stable(k=5, window=4):
             hist = st.session_state.rating_history
         
             if len(hist) < window:
