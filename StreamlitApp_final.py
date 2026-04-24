@@ -94,6 +94,9 @@ if tab == "Trip Selector":
     
             countries_nogo = st.multiselect(label="Select trips to exclude", options = data['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='')
 
+		data['Start Date'] = data['Start Date Final'].dt.date
+        data['End Date'] = data['End Date Final'].dt.date
+
         data['nogo'] = 0
 
         for date in dates_nogo:
@@ -101,6 +104,9 @@ if tab == "Trip Selector":
 
         for trip in countries_nogo:
         	data.loc[trip == data['Trip Name'], 'nogo'] = 1
+
+        if data['nogo'].min() == 1:
+            st.write("Sorry, all available trips contain one of your block-out dates :(")
     
         col1, col2 = st.columns([3,3])
 
@@ -256,13 +262,6 @@ if tab == "Trip Selector":
             filtered_data_final = filtered_data[filtered_data['in_pricerange']]
 
     filtered_data_unique = filtered_data_final.drop_duplicates(["Trip Name"])
-    filtered_data_unique['Start Date'] = filtered_data_unique['Start Date Final'].dt.date
-    filtered_data_unique['End Date'] = filtered_data_unique['End Date Final'].dt.date
-
-    if filtered_data_unique['nogo'].min() == 1:
-        st.write("Sorry, all available trips contain under one of your block-out dates :(")
-    
-    filtered_data_unique = filtered_data_unique[filtered_data_unique['nogo'] != 1]
 
     if ratings_selected:
         filtered_data_unique_final = filtered_data_unique[['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']]
