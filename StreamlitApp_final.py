@@ -914,7 +914,7 @@ if tab == "Easy Ranker":
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)'
                 )
-                st.plotly_chart(bar_fig, width='stretch')
+                st.plotly_chart(bar_fig, use_container_width=True)
  
             st.stop()
  
