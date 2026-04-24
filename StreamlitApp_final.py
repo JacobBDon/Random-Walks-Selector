@@ -586,7 +586,7 @@ if tab == "Easy Ranker":
  
     st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until top-5 rankings stabilize""")
  
-    cols = st.columns([3,1,1,1,1,1,])
+    cols = st.columns([3,1,1,1,1,1,3])
  
     with cols[0]:
  
