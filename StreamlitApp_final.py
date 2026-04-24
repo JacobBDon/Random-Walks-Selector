@@ -340,7 +340,7 @@ if tab == "Trip Selector":
             height=800
             )
 
-    st.session_state["filtered_data"] = filtered_data
+    st.session_state["filtered_data"] = filtered_data_final
     st.session_state["filtered_data_unique_final"] = filtered_data_unique_final
 
     st.title("Activity Charts")
