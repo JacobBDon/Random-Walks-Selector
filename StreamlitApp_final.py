@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 def load_data():
     data = pd.read_excel("https://raw.githubusercontent.com/JacobBDon/Random-Walks-Selector/main/Full_Random_Walks_Dataset.xlsx", index_col=False)
     data['Price_temp'] = data.loc[data['Trip Name'] != "US - Puerto Rico", 'Price'].str.replace("$","").str.replace(",","")
-    st.write(data['Price_temp'].drop_duplicates())
+   
     data['Days'] = data['Number of Days']
     data.loc[data['Trip Name'] == "US - Puerto Rico", 'Price_temp'] = "2347"
     data['Price_int'] = data['Price_temp'].astype(int)
