@@ -60,6 +60,8 @@ if not st.session_state["welcomed"]:
 
 if tab == "Trip Selector":
 
+    data = data.copy()
+
     st.set_page_config(layout="wide")
 
     cols_main = st.columns([2,3])
@@ -368,6 +370,8 @@ if tab == "Trip Selector":
                   
 if tab == "Itinerary Selector":
 
+    data = data.copy()
+
     st.set_page_config(layout="wide")
 
     cols = st.columns(4)
@@ -540,6 +544,8 @@ if tab == "Itinerary Selector":
                 st.plotly_chart(fig, key=f'{trip}2')
 
 if tab == "Easy Ranker":
+
+    data = data.copy()
 
     st.set_page_config(layout="wide")
  
