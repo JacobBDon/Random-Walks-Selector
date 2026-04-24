@@ -3,6 +3,8 @@ import pandas as pd
 import time
 import plotly.graph_objects as go
 
+st.set_page_config(layout="wide")
+
 @st.cache_data
 def load_data():
     data = pd.read_excel("https://raw.githubusercontent.com/JacobBDon/Random-Walks-Selector/main/Full_Random_Walks_Dataset.xlsx", index_col=False)
@@ -50,8 +52,6 @@ if not st.session_state["welcomed"]:
 if tab == "Trip Selector":
 
     data = data.copy()
-
-    st.set_page_config(layout="wide")
 
     cols_main = st.columns([2,3])
 
@@ -361,8 +361,6 @@ if tab == "Itinerary Selector":
 
     data = data.copy()
 
-    st.set_page_config(layout="wide")
-
     cols = st.columns(4)
 
     with cols[0]:
@@ -535,8 +533,6 @@ if tab == "Itinerary Selector":
 if tab == "Easy Ranker":
 
     data = data.copy()
-
-    st.set_page_config(layout="wide")
  
     st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until rankings stabilize (up to top-7)""")
  
