@@ -90,27 +90,28 @@ if tab == "Trip Selector":
             dates_nogo = st.multiselect(label="Select dates you cannot attend", options=date_list, placeholder='')
             st.write("Note: Panama Random Walks website states August 26 - 31; itinerary states August 27 - September 3.")
 
-        with st.container(border=True):
-    
-            countries_nogo = st.multiselect(label="Select trips to exclude", options = data['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='')
+        data['nogo'] = 0
 
+		
         data['Start Date'] = data['Start Date Final'].dt.date
         data['End Date'] = data['End Date Final'].dt.date
-
-        data['nogo'] = 0
 
         for date in dates_nogo:
             data.loc[(date >= data['Start Date']) & (date <= data['End Date']), 'nogo'] = 1
 
+        data2 = data[data['nogo'] == 0]
+			
+        with st.container(border=True):
+    
+            countries_nogo = st.multiselect(label="Select trips to exclude", options = data2['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='')
+
         for trip in countries_nogo:
-        	data.loc[trip == data['Trip Name'], 'nogo'] = 1
+        	data2.loc[trip == data2['Trip Name'], 'nogo'] = 1
 
         if data['nogo'].min() == 1:
-            st.write("Sorry, all available trips contain one of your block-out dates :(")
+            st.write("Sorry, there are no trips available :(")
     
         col1, col2 = st.columns([3,3])
-
-        data2 = data[data['nogo'] == 0]
 
 
         with col1:
