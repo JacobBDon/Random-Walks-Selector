@@ -648,6 +648,7 @@ if tab == "Easy Ranker":
             st.session_state.total_rounds = 0
             st.session_state.rating_history = []
             st.session_state.full_history = []
+            st.session_state.current_pair = None
         
             n = len(trip_choices)
             if n <= 7:
@@ -688,8 +689,16 @@ if tab == "Easy Ranker":
                 remaining = [
                     p for p in st.session_state.all_pairs
                     if tuple(sorted(p)) not in comps
+                    and tuple(sorted(p)) != tuple(sorted(st.session_state.get("current_pair") or (-1,-1)))
                 ]
                 return random.choice(remaining) if remaining else (None, None)
+                if not remaining:
+                    # all pairs answered or only current pair left — clear current and finish
+                    st.session_state.current_pair = None
+                    return random.choice([p for p in st.session_state.all_pairs if tuple(sorted(p)) not in comps]) if len(comps) < len(st.session_state.all_pairs) else (None, None)
+                chosen = random.choice(remaining)
+                st.session_state.current_pair = chosen
+                return chosen
         
         # RANDOM
             if mode == "random":
@@ -799,7 +808,7 @@ if tab == "Easy Ranker":
                 if st.button("↺ Start Over (Same Trips)"):
                     for k in ["initialized", "ratings", "match_counts", "comparisons",
                               "total_rounds", "rating_history", "full_history", "ids", "all_pairs",
-							 "last_lefts", "last_pair"]:
+							 "last_lefts", "last_pair", "current_pair"]:
                         st.session_state.pop(k, None)
                     st.session_state.initialized = False
                     st.session_state.completed = False
@@ -808,7 +817,7 @@ if tab == "Easy Ranker":
                 if st.button("↺ Full Reset (Choose New Trips)"):
                     for k in ["begin", "completed", "initialized", "trip_choices", "ratings",
                               "match_counts", "comparisons", "total_rounds", "rating_history",
-                              "full_history", "ids", "all_pairs", "mode"]:
+                              "full_history", "ids", "all_pairs", "mode", "last_lefts", "last_pair", "current_pair"]:
                         st.session_state.pop(k, None)
                     st.rerun()
  
@@ -889,6 +898,7 @@ if tab == "Easy Ranker":
     
                 st.session_state.comparisons.add(tuple(sorted((_left_id, _right_id))))
                 st.session_state.total_rounds += 1
+                st.session_state.current_pair = None
      
                 st.session_state.rating_history.append(st.session_state.ratings.copy())
                 st.session_state.full_history.append((_left_id, _right_id, score_left, score_right))
