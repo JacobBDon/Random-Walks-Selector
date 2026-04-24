@@ -189,7 +189,7 @@ if tab == "Trip Selector":
 
             i = 0
 			
-			ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
+            ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
             for col in ratingcols_str:
 
                 with cols[i]:
