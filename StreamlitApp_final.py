@@ -11,9 +11,7 @@ def load_data():
     data['Price_temp'] = data.loc[data['Trip Name'] != "US - Puerto Rico", 'Price'].str.replace("$","").str.replace(",","")
     data['Days'] = data['Number of Days']
     data.loc[data['Trip Name'] == "US - Puerto Rico", 'Price_temp'] = "2347"
-    data.loc[data['Trip Name'] == "US - Virgin Islands", 'Price_temp'] = "0"
-    data.loc[data['Trip Name'] == "US - Virgin Islands", 'Price'] = "Missing"
-    data.loc[data['Trip Name'] != "US - Virgin Islands", 'Price_int'] = data['Price_temp'].astype(int)
+    data['Price_int'] = data['Price_temp'].astype(int)
     for col in ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']:
         data.loc[data[col].isnull(), col] = 0
         data[f'{col}_int'] = data[col].astype(int)
@@ -299,7 +297,7 @@ if tab == "Trip Selector":
                          format="$%d",
                          key='ts_price_slider'
                      )
-                 st.markdown("""Notes:\n\n(1) US - Virgin Islands is missing a price.\n\n(2) US - Puerto Rico price does not include flight.""")
+                 st.markdown("""Note: US - Puerto Rico price does not include flight.""")
 
 
             filtered_data['in_pricerange'] = (filtered_data['Price_int'] >= min_price) & (filtered_data['Price_int'] <= max_price)
