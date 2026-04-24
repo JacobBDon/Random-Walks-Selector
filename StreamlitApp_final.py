@@ -68,8 +68,6 @@ if tab == "Trip Selector":
         st.session_state['_saved_ts_activitylevel'] = st.session_state['ts_activitylevel']
     if 'ts_pricerange' in st.session_state:
         st.session_state['_saved_ts_pricerange'] = st.session_state['ts_pricerange']
-    if 'ts_price_slider' in st.session_state:
-        st.session_state['_saved_ts_price_slider'] = st.session_state['ts_price_slider']
     if 'ts_sortselect_ratings' in st.session_state:
         st.session_state['_saved_ts_sortselect_ratings'] = st.session_state['ts_sortselect_ratings']
     if 'ts_sortselect_noratings' in st.session_state:
@@ -80,12 +78,11 @@ if tab == "Trip Selector":
         st.session_state['_saved_ts_chart_tripname'] = st.session_state['ts_chart_tripname']
 
     data = data.copy()
-
     
 
     for _key in ['ts_datesnogo', 'ts_countriesnogo', 'ts_filtertype', 'ts_tripname',
              'ts_continent', 'ts_triptype', 'ts_numdays', 'ts_activitylevel',
-             'ts_pricerange', 'ts_price_slider', 'ts_sortselect_ratings',
+             'ts_pricerange', 'ts_sortselect_ratings',
              'ts_sortselect_noratings', 'ts_seetrips', 'ts_chart_tripname']:
         if _key not in st.session_state and f'_saved_{_key}' in st.session_state:
             st.session_state[_key] = st.session_state[f'_saved_{_key}']
