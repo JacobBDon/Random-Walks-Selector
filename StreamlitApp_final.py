@@ -101,7 +101,14 @@ if tab == "Trip Selector":
 			
         with st.container(border=True):
     
-            countries_nogo = st.multiselect(label="Select trips to exclude", options = data2['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='', key='ts_countriesnogo')
+            _nogo_opts = data2['Trip Name'].drop_duplicates().sort_values().tolist()
+            countries_nogo = st.multiselect(
+                label="Select trips to exclude",
+                options=_nogo_opts,
+                default=[v for v in st.session_state.get('ts_countriesnogo', []) if v in _nogo_opts],
+                placeholder='',
+                key='ts_countriesnogo'
+            )
 
         for trip in countries_nogo:
         	data2.loc[trip == data2['Trip Name'], 'nogo'] = 1
@@ -113,7 +120,14 @@ if tab == "Trip Selector":
 
 
         with col1:
-            tripname = st.multiselect(label='Trip Name', options=data2['Trip Name'].sort_values().unique().tolist(), placeholder='', key='ts_tripname')
+            _tripname_opts = data2['Trip Name'].sort_values().unique().tolist()
+            tripname = st.multiselect(
+                label='Trip Name',
+                options=_tripname_opts,
+                default=[v for v in st.session_state.get('ts_tripname', []) if v in _tripname_opts],
+                placeholder='',
+                key='ts_tripname'
+            )
 
         with col2:
             continent = st.multiselect(label = 'Continent', options=data2['Continent'].sort_values().unique().tolist(), placeholder='', key='ts_continent')
