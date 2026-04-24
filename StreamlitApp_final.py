@@ -569,6 +569,17 @@ if tab == "Itinerary Selector":
                 )
 
                 st.plotly_chart(fig, key=f'{trip}2')
+				
+                styled_df = (data_itin_country[['Day Number','Date','Activity','Event Title','Event Time']]).style.set_table_styles([
+                    {'selector': 'th', 'props': [('background-color', '#8B0000'), ('color', 'white')]}
+                ])
+				
+                st.table(
+                styled_df,
+                hide_index=True
+                )
+
+
 
 if tab == "Easy Ranker":
 
