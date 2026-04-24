@@ -85,7 +85,7 @@ if tab == "Trip Selector":
     
         with st.container(border=True):
     
-            dates_nogo = st.multiselect(label="Select dates you cannot attend", options=date_list, placeholder='')
+            dates_nogo = st.multiselect(label="Select dates you cannot attend", options=date_list, placeholder='', key='ts_datesnogo')
             st.write("Note: Panama Random Walks website states August 26 - 31; itinerary states August 27 - September 3.")
 
         data['nogo'] = 0
@@ -101,7 +101,7 @@ if tab == "Trip Selector":
 			
         with st.container(border=True):
     
-            countries_nogo = st.multiselect(label="Select trips to exclude", options = data2['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='')
+            countries_nogo = st.multiselect(label="Select trips to exclude", options = data2['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='', key='ts_countriesnogo')
 
         for trip in countries_nogo:
         	data2.loc[trip == data2['Trip Name'], 'nogo'] = 1
@@ -119,7 +119,7 @@ if tab == "Trip Selector":
             continent = st.multiselect(label = 'Continent', options=data2['Continent'].sort_values().unique().tolist(), placeholder='', key='ts_continent')
 
         with col1:
-            triptype = st.multiselect(label='Trip Type', options=data2['Trip Type'].sort_values().unique().tolist(), placeholder='', key='triptype')
+            triptype = st.multiselect(label='Trip Type', options=data2['Trip Type'].sort_values().unique().tolist(), placeholder='', key='ts_triptype')
 
         with col2:
             numdays = st.multiselect(label='Number of Days', options=data2['Number of Days'].sort_values().unique().tolist(), placeholder='',  key='ts_numdays')
@@ -251,7 +251,8 @@ if tab == "Trip Selector":
                          max_value=max_absolute,
                          value = (min_absolute, max_absolute),
                          label_visibility="collapsed",
-                         format="$%d"
+                         format="$%d",
+                         key='ts_price_slider'
                      )
                  st.markdown("""Notes:\n\n(1) US - Virgin Islands is missing a price.\n\n(2) US - Puerto Rico price does not include flight.""")
 
@@ -275,9 +276,9 @@ if tab == "Trip Selector":
 
             st.markdown('**Your trips:**')
             if ratings_selected:
-                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture'], placeholder='', key='ts_sortselect')
+                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture'], placeholder='', key='ts_sortselect_ratings')
             else:
-                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days'], placeholder='', key='ts_sortselect')
+                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days'], placeholder='', key='ts_sortselect_noratings')
 				
             if not sortselect:
                 filtered_data_unique_final = filtered_data_unique_final.sort_values(['Trip Name'])
@@ -298,7 +299,7 @@ if tab == "Trip Selector":
 
     st.title("Activity Charts")
 
-    if st.toggle("See trips from Trip Selector"):
+    if st.toggle("See trips from Trip Selector", key='ts_seetrips'):
         
         data_want = filtered_data_unique
 
@@ -306,7 +307,7 @@ if tab == "Trip Selector":
         cols = st.columns([1,2])
         with cols[0]:
 
-            tripname = st.multiselect('Select trips', filtered_data_unique['Trip Name'].unique().tolist(), placeholder='')
+            tripname = st.multiselect('Select trips', filtered_data_unique['Trip Name'].unique().tolist(), placeholder='', key='ts_chart_tripname')
         
         data_want = filtered_data_unique[filtered_data_unique['Trip Name'].isin(tripname)]
 
