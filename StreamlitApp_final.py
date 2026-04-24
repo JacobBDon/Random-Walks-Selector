@@ -104,7 +104,7 @@ if tab == "Trip Selector":
     
         col1, col2 = st.columns([3,3])
 
-		data2 = data[data['nogo'] == 0]
+        data2 = data[data['nogo'] == 0]
 
 
         with col1:
