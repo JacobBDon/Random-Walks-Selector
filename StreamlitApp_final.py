@@ -3,34 +3,23 @@ import pandas as pd
 import time
 import plotly.graph_objects as go
 
-data = pd.read_excel("https://raw.githubusercontent.com/JacobBDon/Random-Walks-Selector/main/Full_Random_Walks_Dataset.xlsx", index_col=False)
+@st.cache_data
+def load_data():
+    data = pd.read_excel("https://raw.githubusercontent.com/JacobBDon/Random-Walks-Selector/main/Full_Random_Walks_Dataset.xlsx", index_col=False)
+    data['Price_temp'] = data.loc[data['Trip Name'] != "US - Puerto Rico", 'Price'].str.replace("$","").str.replace(",","")
+    data['Days'] = data['Number of Days']
+    data.loc[data['Trip Name'] == "US - Puerto Rico", 'Price_temp'] = "2347"
+    data.loc[data['Trip Name'] == "US - Virgin Islands", 'Price_temp'] = "0"
+    data.loc[data['Trip Name'] == "US - Virgin Islands", 'Price'] = "Missing"
+    data.loc[data['Trip Name'] != "US - Virgin Islands", 'Price_int'] = data['Price_temp'].astype(int)
+    for col in ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']:
+        data.loc[data[col].isnull(), col] = 0
+        data[f'{col}_int'] = data[col].astype(int)
+        data[f'{col}_str'] = data[f'{col}_int'].astype(str)
+        data.loc[data[f'{col}_str'] == "0", f'{col}_str'] = "Missing"
+    return data
 
-data['Price_temp'] = data.loc[data['Trip Name'] != "US - Puerto Rico", 'Price'].str.replace("$","").str.replace(",","")
-
-data['Days'] = data['Number of Days']
-
-##   Manual changes
-data.loc[data['Trip Name'] == "US - Puerto Rico", 'Price_temp'] = "2347"
-data.loc[data['Trip Name'] == "US - Virgin Islands", 'Price_temp'] = "0"
-data.loc[data['Trip Name'] == "US - Virgin Islands", 'Price'] = "Missing"
-
-data.loc[data['Trip Name'] != "US - Virgin Islands", 'Price_int'] = data['Price_temp'].astype(int)
-
-ratingcols = ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']
-
-ratingcols_str = []
-
-for col in ratingcols:
-
-    data.loc[data[col].isnull(), col] = 0
-
-    data[f'{col}_int'] = data[col].astype(int)
-
-    data[f'{col}_str'] = data[f'{col}_int'].astype(str)
-
-    data.loc[data[f'{col}_str'] == "0", f'{col}_str'] = "Missing"
-
-    ratingcols_str.append(f'{col}_str')
+data = load_data()
 
 tab = st.sidebar.radio(
     "Select a page",
