@@ -927,7 +927,7 @@ if tab == "Easy Ranker":
                 }
                 </style>
                 """, unsafe_allow_html=True)
-                if st.button(left['Trip Name'].iloc[0], key=f"leftbutton_{left_id}_{st.session_state.total_rounds}"):
+                if st.button(f"{left['Trip Name'].iloc[0]} - {left['Price'].iloc[0]}", key=f"leftbutton_{left_id}_{st.session_state.total_rounds}"):
                     handle(1, 0)
 
             with btn_col2:
@@ -935,7 +935,7 @@ if tab == "Easy Ranker":
                     handle(0.5, 0.5)
 
             with btn_col3:
-                if st.button(right['Trip Name'].iloc[0], key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
+                if st.button(f"{right['Trip Name'].iloc[0]} - {right['Price'].iloc[0]}", key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
                     handle(0, 1)
  
             n_prog = len(st.session_state.trip_choices)
