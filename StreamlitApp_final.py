@@ -94,7 +94,7 @@ if tab == "Trip Selector":
     
             countries_nogo = st.multiselect(label="Select trips to exclude", options = data['Trip Name'].drop_duplicates().sort_values().tolist(), placeholder='')
 
-		data['Start Date'] = data['Start Date Final'].dt.date
+        data['Start Date'] = data['Start Date Final'].dt.date
         data['End Date'] = data['End Date Final'].dt.date
 
         data['nogo'] = 0
