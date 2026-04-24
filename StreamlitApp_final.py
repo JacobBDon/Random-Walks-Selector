@@ -68,7 +68,7 @@ if tab == "Trip Selector":
     with cols_main[0]:
         st.title('Chicago Booth Random Walks 2026')
     
-        filtertype = st.radio('**Would you like to filter or compare?**', ['Filter (keep trips that share ALL selected criteria)', 'Compare (show trips that have ANY of the selected criteria)'])
+        filtertype = st.radio('**Would you like to filter or compare?**', ['Filter (keep trips that share ALL selected criteria)', 'Compare (show trips that have ANY of the selected criteria)'], key='ts_filtertype')
     
         min_date = data['Start Date'].min()
         max_date = data['End Date'].max()
@@ -113,16 +113,16 @@ if tab == "Trip Selector":
 
 
         with col1:
-            tripname = st.multiselect(label='Trip Name', options=data2['Trip Name'].sort_values().unique().tolist(), placeholder='')
+            tripname = st.multiselect(label='Trip Name', options=data2['Trip Name'].sort_values().unique().tolist(), placeholder='', key='ts_tripname')
 
         with col2:
-            continent = st.multiselect(label = 'Continent', options=data2['Continent'].sort_values().unique().tolist(), placeholder='')
+            continent = st.multiselect(label = 'Continent', options=data2['Continent'].sort_values().unique().tolist(), placeholder='', key='ts_continent')
 
         with col1:
-            triptype = st.multiselect(label='Trip Type', options=data2['Trip Type'].sort_values().unique().tolist(), placeholder='')
+            triptype = st.multiselect(label='Trip Type', options=data2['Trip Type'].sort_values().unique().tolist(), placeholder='', key='triptype')
 
         with col2:
-            numdays = st.multiselect(label='Number of Days', options=data2['Number of Days'].sort_values().unique().tolist(), placeholder='')
+            numdays = st.multiselect(label='Number of Days', options=data2['Number of Days'].sort_values().unique().tolist(), placeholder='',  key='ts_numdays')
 
         ratings_selected = False
         ratings = []
@@ -134,13 +134,13 @@ if tab == "Trip Selector":
 
         with cols[0]:
             with st.container(border=True):
-                activity_selected = st.toggle("Select Activity Level")
+                activity_selected = st.toggle("Select Activity Level",  key='ts_activitylevel')
 
         with cols[1]:
 
             with st.container(border=True):
 
-                price_selected = st.toggle("Select Price Range")
+                price_selected = st.toggle("Select Price Range", key='ts_pricerange')
 
         if activity_selected:
 
@@ -153,7 +153,7 @@ if tab == "Trip Selector":
 
                     options = data[col].unique().tolist()
                     options.sort()
-                    rating = st.multiselect(label=ratingcols[i], options=options, placeholder='')
+                    rating = st.multiselect(label=ratingcols[i], options=options, placeholder='', key=f"ts_pricerange_{col}")
 
                 ratings.append(rating)
   
@@ -275,9 +275,10 @@ if tab == "Trip Selector":
 
             st.markdown('**Your trips:**')
             if ratings_selected:
-                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture'], placeholder='')
+                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture'], placeholder='', key='ts_sortselect')
             else:
-                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days'], placeholder='')
+                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days'], placeholder='', key='ts_sortselect')
+				
             if not sortselect:
                 filtered_data_unique_final = filtered_data_unique_final.sort_values(['Trip Name'])
             else:
