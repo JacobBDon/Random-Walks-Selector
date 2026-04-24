@@ -667,6 +667,8 @@ if tab == "Easy Ranker":
  
         # ------------------ Normalize Elo to exaggerated 0-10 scale ------------------
         def normalize_ratings(ratings):
+            if not ratings:
+                return {}
             values = list(ratings.values())
             min_r, max_r = min(values), max(values)
             if max_r == min_r:
@@ -912,7 +914,7 @@ if tab == "Easy Ranker":
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)'
                 )
-                st.plotly_chart(bar_fig, use_container_width=True)
+                st.plotly_chart(bar_fig, width='stretch')
  
             st.stop()
  
