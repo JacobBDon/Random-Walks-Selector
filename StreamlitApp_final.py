@@ -51,11 +51,47 @@ if not st.session_state["welcomed"]:
 
 if tab == "Trip Selector":
 
+    if 'ts_datesnogo' in st.session_state:
+        st.session_state['_saved_ts_datesnogo'] = st.session_state['ts_datesnogo']
+    if 'ts_countriesnogo' in st.session_state:
+        st.session_state['_saved_ts_countriesnogo'] = st.session_state['ts_countriesnogo']
+    if 'ts_filtertype' in st.session_state:
+        st.session_state['_saved_ts_filtertype'] = st.session_state['ts_filtertype']
+    if 'ts_tripname' in st.session_state:
+        st.session_state['_saved_ts_tripname'] = st.session_state['ts_tripname']
+    if 'ts_continent' in st.session_state:
+        st.session_state['_saved_ts_continent'] = st.session_state['ts_continent']
+    if 'ts_triptype' in st.session_state:
+        st.session_state['_saved_ts_triptype'] = st.session_state['ts_triptype']
+    if 'ts_numdays' in st.session_state:
+        st.session_state['_saved_ts_numdays'] = st.session_state['ts_numdays']
+    if 'ts_activitylevel' in st.session_state:
+        st.session_state['_saved_ts_activitylevel'] = st.session_state['ts_activitylevel']
+    if 'ts_pricerange' in st.session_state:
+        st.session_state['_saved_ts_pricerange'] = st.session_state['ts_pricerange']
+    if 'ts_price_slider' in st.session_state:
+        st.session_state['_saved_ts_price_slider'] = st.session_state['ts_price_slider']
+    if 'ts_sortselect_ratings' in st.session_state:
+        st.session_state['_saved_ts_sortselect_ratings'] = st.session_state['ts_sortselect_ratings']
+    if 'ts_sortselect_noratings' in st.session_state:
+        st.session_state['_saved_ts_sortselect_noratings'] = st.session_state['ts_sortselect_noratings']
+    if 'ts_seetrips' in st.session_state:
+        st.session_state['_saved_ts_seetrips'] = st.session_state['ts_seetrips']
+    if 'ts_chart_tripname' in st.session_state:
+        st.session_state['_saved_ts_chart_tripname'] = st.session_state['ts_chart_tripname']
+
     data = data.copy()
 
-    cols_main = st.columns([2,3])
+    
 
-
+    for _key in ['ts_datesnogo', 'ts_countriesnogo', 'ts_filtertype', 'ts_tripname',
+             'ts_continent', 'ts_triptype', 'ts_numdays', 'ts_activitylevel',
+             'ts_pricerange', 'ts_price_slider', 'ts_sortselect_ratings',
+             'ts_sortselect_noratings', 'ts_seetrips', 'ts_chart_tripname']:
+    if _key not in st.session_state and f'_saved_{_key}' in st.session_state:
+        st.session_state[_key] = st.session_state[f'_saved_{_key}']
+		
+    cols_main = st.columns([2,3])	
     with cols_main[0]:
         st.title('Chicago Booth Random Walks 2026')
     
