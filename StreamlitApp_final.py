@@ -529,7 +529,7 @@ if tab == "Easy Ranker":
 
     st.set_page_config(layout="wide")
  
-    st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until rankings stabilize (up to Top-7)""")
+    st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until rankings stabilize (up to top-7)""")
  
     cols = st.columns([3,1,1,1,1,1,])
  
