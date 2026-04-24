@@ -691,15 +691,37 @@ if tab == "Easy Ranker":
                 ]
                 return random.choice(remaining) if remaining else (None, None)
         
-            # RANDOM
+        # RANDOM
             if mode == "random":
                 target = int(len(trip_choices) * 4)
                 if st.session_state.total_rounds >= target:
                     return None, None
+
                 ids_sorted = sorted(st.session_state.ids, key=lambda x: counts[x])
-                first = ids_sorted[0]
+
+                # Guard: if the same trip has been `first` 3 times in a row,
+                # rotate to the next least-seen trip instead
+                last_lefts = st.session_state.get("last_lefts", [])
+                for candidate in ids_sorted:
+                    if last_lefts.count(candidate) < 3:
+                        first = candidate
+                        break
+                else:
+                    first = ids_sorted[0]  # fallback
+
+                # Guard: avoid showing the exact same pair back-to-back
+                last_pair = st.session_state.get("last_pair", None)
                 other_ids = [i for i in st.session_state.ids if i != first]
-                return first, random.choice(other_ids)
+                if len(other_ids) > 1 and last_pair is not None:
+                    last_opponent = last_pair[1] if last_pair[0] == first else last_pair[0]
+                    filtered = [i for i in other_ids if i != last_opponent]
+                    second = random.choice(filtered if filtered else other_ids)
+                else:
+                    second = random.choice(other_ids)
+
+                st.session_state.last_lefts = (last_lefts + [first])[-6:]
+                st.session_state.last_pair = (first, second)
+                return first, second
 
             # ADAPTIVE
             if st.session_state.total_rounds >= int(len(trip_choices) * 5):
@@ -776,7 +798,8 @@ if tab == "Easy Ranker":
             with reset_col1:
                 if st.button("↺ Start Over (Same Trips)"):
                     for k in ["initialized", "ratings", "match_counts", "comparisons",
-                              "total_rounds", "rating_history", "full_history", "ids", "all_pairs"]:
+                              "total_rounds", "rating_history", "full_history", "ids", "all_pairs",
+							 "last_lefts", "last_pair"]:
                         st.session_state.pop(k, None)
                     st.session_state.initialized = False
                     st.session_state.completed = False
