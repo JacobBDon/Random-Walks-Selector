@@ -154,8 +154,14 @@ if tab == "Trip Selector":
             'ts_continent': 'Continent',
             'ts_triptype': 'Trip Type',
             'ts_numdays': 'Number of Days',
+            'ts_rating_Nightlife_str': 'Nightlife_str',
+            'ts_rating_Physical Activity_str': 'Physical Activity_str',
+            'ts_rating_Relaxation_str': 'Relaxation_str',
+            'ts_rating_Nature_str': 'Nature_str',
+            'ts_rating_Cutlure_str': 'Culture_str',
         }
-        
+		
+        ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
         active_filters = {}
         for key, col in filter_map.items():
             if st.session_state.get(key):
