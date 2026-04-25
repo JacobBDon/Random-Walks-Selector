@@ -627,7 +627,7 @@ if tab == "Itinerary Selector":
 
 if tab == "Easy Ranker":
 
-	if "welcomed_ranker" not in st.session_state:
+    if "welcomed_ranker" not in st.session_state:
         st.session_state["welcomed_ranker"] = False
 
     @st.dialog("Welcome to the Random Walks 2026 Easy Ranker!")
