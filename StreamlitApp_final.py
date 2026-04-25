@@ -956,7 +956,7 @@ if tab == "Easy Ranker":
         if len(st.session_state.trip_choices) >= 2:
     
             st.markdown("""**Select your preferred trip:**""")
-            btn_col1, btn_col2, btn_col3, btn_col4, btn_col5, btn_col6 = st.columns([5,5,1,5,1,1])
+            btn_col1, btn_col2, btn_col3, btn_col4, btn_col5, btn_col6 = st.columns([3,3,3,1,1,1])
 
             left_id, right_id = pair
  
@@ -1026,7 +1026,7 @@ if tab == "Easy Ranker":
                 if st.button("I can't decide", key=f"tiebutton_{st.session_state.total_rounds}"):
                     handle(0.5, 0.5)
 
-            with btn_col4:
+            with btn_col3:
                 st.markdown("""""")
                 if st.button(f"{right['Trip Name'].iloc[0]} - {right['Number of Days'].iloc[0]} days / {right['Price'].iloc[0]}", key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
                     handle(0, 1)
