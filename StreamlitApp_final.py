@@ -143,76 +143,114 @@ if tab == "Trip Selector":
 
         data3 = data2[data2['nogo'] == 0]
     
-        col1, col2 = st.columns([3,3])
-
-        checkvars = []
-        data_forselect = data3.copy()
-        
-        # Map session state keys to column names
-        filter_map = {
-            'ts_tripname': 'Trip Name',
-            'ts_continent': 'Continent',
-            'ts_triptype': 'Trip Type',
-            'ts_numdays': 'Number of Days',
-            'ts_rating_Nightlife_str': 'Nightlife_str',
-            'ts_rating_Physical Activity_str': 'Physical Activity_str',
-            'ts_rating_Relaxation_str': 'Relaxation_str',
-            'ts_rating_Nature_str': 'Nature_str',
-            'ts_rating_Culture_str': 'Culture_str',
-        }
-		
-        ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
-        active_filters = {}
-        for key, col in filter_map.items():
-            if st.session_state.get(key):
-                active_filters[col] = st.session_state[key]
-        
-        def get_options_for(target_col, data):
-            filtered = data.copy()
-            for col, values in active_filters.items():
-                if col != target_col:  # <-- skip the widget's own filter
-                    filtered = filtered.loc[filtered[col].isin(values)]
-            return filtered[target_col].sort_values().unique().tolist()
-        
-        with col1:
-            _tripname_opts = get_options_for('Trip Name', data3)
-            tripname = st.multiselect(
-                label='Trip Name',
-                options=_tripname_opts,
-                default=[v for v in st.session_state.get('ts_tripname', []) if v in _tripname_opts],
-                placeholder='',
-                key='ts_tripname'
-            )
-        
-        with col2:
-            _continent_opts = get_options_for('Continent', data3)
-            continent = st.multiselect(
-                label='Continent',
-                options=_continent_opts,
-                default=[v for v in st.session_state.get('ts_continent', []) if v in _continent_opts],
-                placeholder='',
-                key='ts_continent'
-            )
-        
-        with col1:
-            _triptype_opts = get_options_for('Trip Type', data3)
-            triptype = st.multiselect(
-                label='Trip Type',
-                options=_triptype_opts,
-                default=[v for v in st.session_state.get('ts_triptype', []) if v in _triptype_opts],
-                placeholder='',
-                key='ts_triptype'
-            )
-        
-        with col2:
-            _numdays_opts = get_options_for('Number of Days', data3)
-            numdays = st.multiselect(
-                label='Number of Days',
-                options=_numdays_opts,
-                default=[v for v in st.session_state.get('ts_numdays', []) if v in _numdays_opts],
-                placeholder='',
-                key='ts_numdays'
-            )
+    col1, col2 = st.columns([3,3])
+    
+    # Map session state keys to column names
+    filter_map = {
+        'ts_tripname': 'Trip Name',
+        'ts_continent': 'Continent',
+        'ts_triptype': 'Trip Type',
+        'ts_numdays': 'Number of Days',
+        'ts_rating_Nightlife_str': 'Nightlife_str',
+        'ts_rating_Physical Activity_str': 'Physical Activity_str',
+        'ts_rating_Relaxation_str': 'Relaxation_str',
+        'ts_rating_Nature_str': 'Nature_str',
+        'ts_rating_Culture_str': 'Culture_str',
+    }
+    
+    ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
+    
+    cols = st.columns([3, 3])
+    
+    with cols[0]:
+        with st.container(border=True):
+            activity_selected = st.toggle("Select Activity Level", key='ts_activitylevel')
+    
+    with cols[1]:
+        with st.container(border=True):
+            price_selected = st.toggle("Select Price Range", key='ts_pricerange')
+    
+    pricelist_full = data3['Price_int'].drop_duplicates().tolist()
+    if 0 in pricelist_full:
+        pricelist_full.remove(0)
+    
+    min_absolute = min(pricelist_full)
+    max_absolute = max(pricelist_full)
+    
+    if price_selected:
+        with cols_main[0]:
+            with st.container(border=True):
+                min_price, max_price = st.slider(
+                    'Trip Price',
+                    min_value=min_absolute,
+                    max_value=max_absolute,
+                    value=st.session_state.get('ts_priceslider', (min_absolute, max_absolute)),
+                    label_visibility="collapsed",
+                    format="$%d",
+                    key='ts_priceslider'
+                )
+            st.markdown("Note: US - Puerto Rico price does not include flight.")
+    else:
+        min_price, max_price = min_absolute, max_absolute
+    
+    # --- Apply price filter to data3 BEFORE building multiselect options ---
+    data3_pricefiltered = data3[
+        (data3['Price_int'] == 0) |  # keep rows with no price
+        ((data3['Price_int'] >= min_price) & (data3['Price_int'] <= max_price))
+    ]
+    
+    # Build active filters from session state
+    active_filters = {}
+    for key, col in filter_map.items():
+        if st.session_state.get(key):
+            active_filters[col] = st.session_state[key]
+    
+    def get_options_for(target_col, data):
+        filtered = data.copy()
+        for col, values in active_filters.items():
+            if col != target_col:
+                filtered = filtered.loc[filtered[col].isin(values)]
+        return filtered[target_col].sort_values().unique().tolist()
+    
+    with col1:
+        _tripname_opts = get_options_for('Trip Name', data3_pricefiltered)
+        tripname = st.multiselect(
+            label='Trip Name',
+            options=_tripname_opts,
+            default=[v for v in st.session_state.get('ts_tripname', []) if v in _tripname_opts],
+            placeholder='',
+            key='ts_tripname'
+        )
+    
+    with col2:
+        _continent_opts = get_options_for('Continent', data3_pricefiltered)
+        continent = st.multiselect(
+            label='Continent',
+            options=_continent_opts,
+            default=[v for v in st.session_state.get('ts_continent', []) if v in _continent_opts],
+            placeholder='',
+            key='ts_continent'
+        )
+    
+    with col1:
+        _triptype_opts = get_options_for('Trip Type', data3_pricefiltered)
+        triptype = st.multiselect(
+            label='Trip Type',
+            options=_triptype_opts,
+            default=[v for v in st.session_state.get('ts_triptype', []) if v in _triptype_opts],
+            placeholder='',
+            key='ts_triptype'
+        )
+    
+    with col2:
+        _numdays_opts = get_options_for('Number of Days', data3_pricefiltered)
+        numdays = st.multiselect(
+            label='Number of Days',
+            options=_numdays_opts,
+            default=[v for v in st.session_state.get('ts_numdays', []) if v in _numdays_opts],
+            placeholder='',
+            key='ts_numdays'
+        )
 
 
         ratings_selected = False
@@ -246,7 +284,7 @@ if tab == "Trip Selector":
 
                 with cols[i]:
 
-                    options = get_options_for(col, data3)
+                    options = get_options_for(col, data3_pricefiltered)
                     options.sort()
                     rating = st.multiselect(label=ratingcols[i], options=options, placeholder='', key=f"ts_rating_{col}")
 
@@ -254,60 +292,60 @@ if tab == "Trip Selector":
   
                 checkval = ratings[i]
 
-                data3[f'keeprating{i+1}'] = data3[col].isin(checkval)
-                data3[f'missingrating{i+1}'] = (not checkval)
+                data3_pricefiltered[f'keeprating{i+1}'] = data3_pricefiltered[col].isin(checkval)
+                data3_pricefiltered[f'missingrating{i+1}'] = (not checkval)
 
                 i = i+1
 
-            data3['keeprating_or'] = (data3['keeprating1'] | data3['keeprating2'] | data3['keeprating3'] | data3['keeprating4'] | data3['keeprating5']) & ~(data3['missingrating1'] & data3['missingrating2'] & data3['missingrating3'] & data3['missingrating4'] & data3['missingrating5'])
-            data3['keeprating_and'] = (data3['keeprating1'] | data3['missingrating1']) & (data3['keeprating2'] | data3['missingrating2']) & (data3['keeprating3'] | data3['missingrating3']) & (data3['keeprating4'] | data3['missingrating4']) & (data3['keeprating5'] | data3['missingrating5'])
+            data3_pricefiltered['keeprating_or'] = (data3_pricefiltered['keeprating1'] | data3_pricefiltered['keeprating2'] | data3_pricefiltered['keeprating3'] | data3_pricefiltered['keeprating4'] | data3_pricefiltered['keeprating5']) & ~(data3_pricefiltered['missingrating1'] & data3_pricefiltered['missingrating2'] & data3_pricefiltered['missingrating3'] & data3_pricefiltered['missingrating4'] & data3_pricefiltered['missingrating5'])
+            data3_pricefiltered['keeprating_and'] = (data3_pricefiltered['keeprating1'] | data3_pricefiltered['missingrating1']) & (data3_pricefiltered['keeprating2'] | data3_pricefiltered['missingrating2']) & (data3_pricefiltered['keeprating3'] | data3_pricefiltered['missingrating3']) & (data3_pricefiltered['keeprating4'] | data3_pricefiltered['missingrating4']) & (data3_pricefiltered['keeprating5'] | data3_pricefiltered['missingrating5'])
             ratings_selected = True
 
-    filtered_data = data3
+    filtered_data = data3_pricefiltered
 
     if (filtertype == 'Filter (keep trips that share ALL selected criteria)') and ratings_selected:
 
-        filtered_data = data3[(
-                             ((data3['Continent'].isin(continent) | (not continent))
-                             & (data3['Trip Name'].isin(tripname) | (not tripname))
-                             & (data3['Number of Days'].isin(numdays) | (not numdays))
-                             & (data3['Trip Type'].isin(triptype) | (not triptype))
+        filtered_data = data3_pricefiltered[(
+                             ((data3_pricefiltered['Continent'].isin(continent) | (not continent))
+                             & (data3_pricefiltered['Trip Name'].isin(tripname) | (not tripname))
+                             & (data3_pricefiltered['Number of Days'].isin(numdays) | (not numdays))
+                             & (data3_pricefiltered['Trip Type'].isin(triptype) | (not triptype))
                              )
-                             & (data3['keeprating_and'] == 1) 
+                             & (data3_pricefiltered['keeprating_and'] == 1) 
                              )]
 
 
     elif (filtertype == 'Compare (show trips that have ANY of the selected criteria)') and ratings_selected:
-        filtered_data = data3[(
-                             (data3['Continent'].isin(continent))
-                             | (data3['Trip Name'].isin(tripname))
-                             | (data3['keeprating_or'] == 1)
-                             | (data3['Number of Days'].isin(numdays))
-                             | (data3['Trip Type'].isin(triptype))
+        filtered_data = data3_pricefiltered[(
+                             (data3_pricefiltered['Continent'].isin(continent))
+                             | (data3_pricefiltered['Trip Name'].isin(tripname))
+                             | (data3_pricefiltered['keeprating_or'] == 1)
+                             | (data3_pricefiltered['Number of Days'].isin(numdays))
+                             | (data3_pricefiltered['Trip Type'].isin(triptype))
                              )]
 
     elif (filtertype == 'Filter (keep trips that share ALL selected criteria)') and not ratings_selected:
 
-        filtered_data = data3[(
-                             ((data3['Continent'].isin(continent) | (not continent))
-                             & (data3['Trip Name'].isin(tripname) | (not tripname))
-                             & (data3['Number of Days'].isin(numdays) | (not numdays))
-                             & (data3['Trip Type'].isin(triptype) | (not triptype))
+        filtered_data = data3_pricefiltered[(
+                             ((data3_pricefiltered['Continent'].isin(continent) | (not continent))
+                             & (data3_pricefiltered['Trip Name'].isin(tripname) | (not tripname))
+                             & (data3_pricefiltered['Number of Days'].isin(numdays) | (not numdays))
+                             & (data3_pricefiltered['Trip Type'].isin(triptype) | (not triptype))
                              )
                             )]
 
 
     elif (filtertype == 'Compare (show trips that have ANY of the selected criteria)') and not ratings_selected:
-        filtered_data = data3[(
-                             (data3['Continent'].isin(continent))
-                             | (data3['Trip Name'].isin(tripname))
-                             | (data3['Number of Days'].isin(numdays))
-                             | (data3['Trip Type'].isin(triptype))
+        filtered_data = data3_pricefiltered[(
+                             (data3_pricefiltered['Continent'].isin(continent))
+                             | (data3_pricefiltered['Trip Name'].isin(tripname))
+                             | (data3_pricefiltered['Number of Days'].isin(numdays))
+                             | (data3_pricefiltered['Trip Type'].isin(triptype))
                              )]
 
 
     prices = filtered_data['Price_int']
-    prices_full = data3['Price_int']
+    prices_full = data3_pricefiltered['Price_int']
 
     pricelist = prices.drop_duplicates().tolist()
 
