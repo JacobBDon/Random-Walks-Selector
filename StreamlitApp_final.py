@@ -1023,7 +1023,7 @@ if tab == "Easy Ranker":
 
             with btn_col2:
                 st.markdown("""""")
-                if st.button("I can't decide...", key=f"tiebutton_{st.session_state.total_rounds}"):
+                if st.button("I can't decide...     ", key=f"tiebutton_{st.session_state.total_rounds}"):
                     handle(0.5, 0.5)
 
             with btn_col3:
