@@ -129,7 +129,7 @@ if tab == "Trip Selector":
             _nogo_opts = data2['Trip Name'].drop_duplicates().sort_values().tolist()
             countries_nogo = st.multiselect(
                 label="Select trips to exclude",
-                options=_nogo_opts,
+                options=sorted(_nogo_opts),
                 default=[v for v in st.session_state.get('ts_countriesnogo', []) if v in _nogo_opts],
                 placeholder='',
                 key='ts_countriesnogo'
@@ -460,7 +460,7 @@ if tab == "Itinerary Selector":
         trips = data_itin['Trip Name'].unique().tolist()
 
         placeh = 'Select trip to view itinerary'
-        countries = st.multiselect('Select trips', trips, placeholder=placeh, key='trip_multiselect')
+        countries = st.multiselect('Select trips', sorted(trips), placeholder=placeh, key='trip_multiselect')
         data_itin = data_itin[data_itin['Trip Name'].isin(countries)]
 
     
@@ -660,7 +660,7 @@ if tab == "Easy Ranker":
         if 'trip_multiselect' not in st.session_state and '_saved_trip_multiselect' in st.session_state:
             st.session_state['trip_multiselect'] = st.session_state['_saved_trip_multiselect']
        
-        countries = st.multiselect('Select trips', trips, placeholder='Select trip to include in ranking', key='trip_multiselect')
+        countries = st.multiselect('Select trips', sorted(trips), placeholder='Select trip to include in ranking', key='trip_multiselect')
         
         data_itin = data_itin[data_itin['Trip Name'].isin(countries)]
  
