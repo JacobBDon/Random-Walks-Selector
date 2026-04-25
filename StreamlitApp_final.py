@@ -1018,7 +1018,7 @@ if tab == "Easy Ranker":
                 }
                 </style>
                 """, unsafe_allow_html=True)
-                if st.button(f"{left['Trip Name'].iloc[0]} - {left['Number of Days'].iloc[0]} days / {left['Price'].iloc[0]}", key=f"leftbutton_{left_id}_{st.session_state.total_rounds}"):
+                if st.button(f"{left['Trip Name'].iloc[0]} - {left['Number of Days'].iloc[0]} days / {left['Price'].iloc[0]}", key=f"leftbutton_{left_id}_{st.session_state.total_rounds}", use_container_width=True):
                     handle(1, 0)
 
             with btn_col2:
@@ -1028,7 +1028,7 @@ if tab == "Easy Ranker":
 
             with btn_col3:
                 st.markdown("""""")
-                if st.button(f"{right['Trip Name'].iloc[0]} - {right['Number of Days'].iloc[0]} days / {right['Price'].iloc[0]}", key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
+                if st.button(f"{right['Trip Name'].iloc[0]} - {right['Number of Days'].iloc[0]} days / {right['Price'].iloc[0]}", key=f"rightbutton_{right_id}_{st.session_state.total_rounds}", use_container_width=True):
                     handle(0, 1)
  
             n_prog = len(st.session_state.trip_choices)
