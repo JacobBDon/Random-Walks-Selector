@@ -1026,6 +1026,7 @@ if tab == "Easy Ranker":
                     handle(0.5, 0.5)
 
             with btn_col3:
+                st.markdown("")
                 if st.button(f"{right['Trip Name'].iloc[0]} - {right['Number of Days'].iloc[0]} days / {right['Price'].iloc[0]}", key=f"rightbutton_{right_id}_{st.session_state.total_rounds}"):
                     handle(0, 1)
  
