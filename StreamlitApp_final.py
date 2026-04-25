@@ -155,7 +155,6 @@ if tab == "Trip Selector":
 
         ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
 
-        # --- MOVED UP: Render toggles before multiselects ---
         cols = st.columns([3,3])
 
         with cols[0]:
@@ -166,7 +165,6 @@ if tab == "Trip Selector":
             with st.container(border=True):
                 price_selected = st.toggle("Select Price Range", key='ts_pricerange')
 
-        # --- MOVED UP: Render price slider before multiselects ---
         pricelist_full = data3['Price_int'].drop_duplicates().tolist()
         if 0 in pricelist_full:
             pricelist_full.remove(0)
@@ -189,7 +187,6 @@ if tab == "Trip Selector":
         else:
             min_price, max_price = min_absolute, max_absolute
 
-        # --- NEW: Apply price filter to data3 before building multiselect options ---
         data3_pricefiltered = data3[
             (data3['Price_int'] == 0) |
             ((data3['Price_int'] >= min_price) & (data3['Price_int'] <= max_price))
@@ -317,7 +314,6 @@ if tab == "Trip Selector":
                              | (data3['Trip Type'].isin(triptype))
                              )]
 
-    # --- Price slider final filtering (unchanged, uses already-rendered slider values) ---
     prices = filtered_data['Price_int']
     prices_full = data3['Price_int']
 
