@@ -389,7 +389,7 @@ if tab == "Trip Selector":
     st.title("Activity Charts")
 
     if st.toggle("See trips from Trip Selector", key='ts_seetrips'):
-        
+        st.dataframe(st.session_state["filtered_data_unique_final"])
         data_want = st.session_state["filtered_data_unique_final"]
 
     else:
