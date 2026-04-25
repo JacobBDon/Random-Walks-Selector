@@ -956,7 +956,7 @@ if tab == "Easy Ranker":
         if len(st.session_state.trip_choices) >= 2:
     
             st.markdown("""**Select your preferred trip:**""")
-            btn_col1, btn_col2, btn_col3, btn_col4, btn_col5, btn_col6 = st.columns([3,3,3,1,1,1])
+            btn_col1, btn_col2, btn_col3, btn_col4, btn_col5, btn_col6 = st.columns([3,3,4,1,1,1])
 
             left_id, right_id = pair
  
