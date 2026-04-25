@@ -158,7 +158,7 @@ if tab == "Trip Selector":
             'ts_rating_Physical Activity_str': 'Physical Activity_str',
             'ts_rating_Relaxation_str': 'Relaxation_str',
             'ts_rating_Nature_str': 'Nature_str',
-            'ts_rating_Cutlure_str': 'Culture_str',
+            'ts_rating_Culture_str': 'Culture_str',
         }
 		
         ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
