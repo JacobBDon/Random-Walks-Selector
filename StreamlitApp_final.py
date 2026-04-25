@@ -398,7 +398,7 @@ if tab == "Trip Selector":
 
             tripname = st.multiselect('Select trips', data['Trip Name'].unique().tolist(), placeholder='', key='ts_chart_tripname')
         
-        data_want = data[data['Trip Name'].isin(tripname)].drop_duplicates("Trip Name").sort_values()
+        data_want = data[data['Trip Name'].isin(tripname)].drop_duplicates('Trip Name').sort_values('Trip Name')
 
     cols_tab2 = st.columns(3)
     
