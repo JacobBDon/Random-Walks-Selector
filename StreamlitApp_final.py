@@ -645,9 +645,9 @@ if tab == "Easy Ranker":
  
     with cols[0]:
  
-        selecttype = st.selectbox('Which trips would you like to rank?', ['Start with Trip Selector', 'Choose your own'], placeholder='')
+        selecttype = st.selectbox('Which trips would you like to rank?', ['Choose from Trip Selector', 'Choose your own'], placeholder='')
  
-        if selecttype == 'Start with Trip Selector':
+        if selecttype == 'Choose from Trip Selector':
             data_itin = st.session_state["filtered_data"]
         else:
             data_itin = data
