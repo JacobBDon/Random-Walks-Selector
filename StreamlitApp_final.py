@@ -390,15 +390,15 @@ if tab == "Trip Selector":
 
     if st.toggle("See trips from Trip Selector", key='ts_seetrips'):
         
-        data_want = filtered_data_unique
+        data_want = st.session_state["filtered_data_unique_final"]
 
     else:
         cols = st.columns([1,2])
         with cols[0]:
 
-            tripname = st.multiselect('Select trips', filtered_data_unique['Trip Name'].unique().tolist(), placeholder='', key='ts_chart_tripname')
+            tripname = st.multiselect('Select trips', data['Trip Name'].unique().tolist(), placeholder='', key='ts_chart_tripname')
         
-        data_want = filtered_data_unique[filtered_data_unique['Trip Name'].isin(tripname)]
+        data_want = data[data['Trip Name'].isin(tripname)].drop_duplicates('Trip Name')
 
     cols_tab2 = st.columns(3)
     
@@ -626,6 +626,17 @@ if tab == "Itinerary Selector":
 
 
 if tab == "Easy Ranker":
+
+	if "welcomed_ranker" not in st.session_state:
+        st.session_state["welcomed_ranker"] = False
+
+    @st.dialog("Welcome to the Random Walks 2026 Easy Ranker!")
+    def welcome_dialog_ranker():
+        st.markdown("""**INSTRUCTIONS:**\n\n(1). Create the list of trips you would like to include in your rankings.\n\n(2). Press "BEGIN EASY RANKING"\n\n(3). Select your preferred trip out of each presented pair (fewer trips to choose from = faster ranking)\n\n(4). Keep playing until top-5 rankings stabilize""")
+        st.session_state["welcomed_ranker"] = True
+
+    if not st.session_state["welcomed_ranker"]:
+        welcome_dialog_ranker()
 
     data = data.copy()
  
