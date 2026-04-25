@@ -352,6 +352,8 @@ if tab == "Trip Selector":
 
     filtered_data_unique = filtered_data_final.drop_duplicates(["Trip Name"])
 
+    st.session_state["filtered_data_forcharts"] = filtered_data_unique
+
     if ratings_selected:
         filtered_data_unique_final = filtered_data_unique[['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']]
         for str in ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']:
@@ -389,8 +391,7 @@ if tab == "Trip Selector":
     st.title("Activity Charts")
 
     if st.toggle("See trips from Trip Selector", key='ts_seetrips'):
-        st.dataframe(st.session_state["filtered_data_unique_final"])
-        data_want = st.session_state["filtered_data_unique_final"]
+        data_want = st.session_state["filtered_data_forcharts"]
 
     else:
         cols = st.columns([1,2])
