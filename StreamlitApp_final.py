@@ -242,7 +242,7 @@ if tab == "Trip Selector":
 
                     options = get_options_for(col, data3)
                     options.sort()
-                    rating = st.multiselect(label=ratingcols[i], options=options, placeholder='', key=f"ts_pricerange_{col}")
+                    rating = st.multiselect(label=ratingcols[i], options=options, placeholder='', key=f"ts_rating_{col}")
 
                 ratings.append(rating)
   
