@@ -80,7 +80,6 @@ if tab == "Trip Selector":
         st.session_state['_saved_ts_chart_tripname'] = st.session_state['ts_chart_tripname']
 
     data = data.copy()
-    
 
     for _key in ['ts_datesnogo', 'ts_countriesnogo', 'ts_filtertype', 'ts_tripname',
              'ts_continent', 'ts_triptype', 'ts_numdays', 'ts_activitylevel',
@@ -88,34 +87,31 @@ if tab == "Trip Selector":
              'ts_sortselect_noratings', 'ts_seetrips', 'ts_chart_tripname']:
         if _key not in st.session_state and f'_saved_{_key}' in st.session_state:
             st.session_state[_key] = st.session_state[f'_saved_{_key}']
-		
-    cols_main = st.columns([2,3])	
+
+    cols_main = st.columns([2,3])
     with cols_main[0]:
         st.title('Chicago Booth Random Walks 2026')
-    
+
         filtertype = st.radio('**Would you like to filter or compare?**', ['Filter (keep trips that share ALL selected criteria)', 'Compare (show trips that have ANY of the selected criteria)'], key='ts_filtertype')
-    
+
         min_date = data['Start Date'].min()
         max_date = data['End Date'].max()
-    
+
         num_days = (max_date - min_date).days
-    
+
         date_list = []
-    
+
         for x in range(num_days+1):
             date0 = min_date + pd.Timedelta(days=x)
             date = date0.date()
             date_list.append(date)
-    
-    
+
         with st.container(border=True):
-    
             dates_nogo = st.multiselect(label="Select dates you cannot attend", options=date_list, placeholder='', key='ts_datesnogo')
             st.write("Note: Panama Random Walks website states August 26 - 31; itinerary states August 27 - September 3.")
 
         data['nogo'] = 0
 
-		
         data['Start Date'] = data['Start Date Final'].dt.date
         data['End Date'] = data['End Date Final'].dt.date
 
@@ -123,9 +119,8 @@ if tab == "Trip Selector":
             data.loc[(date >= data['Start Date']) & (date <= data['End Date']), 'nogo'] = 1
 
         data2 = data[data['nogo'] == 0]
-			
+
         with st.container(border=True):
-    
             _nogo_opts = data2['Trip Name'].drop_duplicates().sort_values().tolist()
             countries_nogo = st.multiselect(
                 label="Select trips to exclude",
@@ -136,18 +131,15 @@ if tab == "Trip Selector":
             )
 
         for trip in countries_nogo:
-        	data2.loc[trip == data2['Trip Name'], 'nogo'] = 1
+            data2.loc[trip == data2['Trip Name'], 'nogo'] = 1
 
         if data2['nogo'].min() == 1:
             st.write("Sorry, there are no trips available :(")
 
         data3 = data2[data2['nogo'] == 0]
-    
+
         col1, col2 = st.columns([3,3])
 
-        checkvars = []
-        data_forselect = data3.copy()
-        
         # Map session state keys to column names
         filter_map = {
             'ts_tripname': 'Trip Name',
@@ -160,22 +152,63 @@ if tab == "Trip Selector":
             'ts_rating_Nature_str': 'Nature_str',
             'ts_rating_Culture_str': 'Culture_str',
         }
-		
+
         ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
+
+        # --- MOVED UP: Render toggles before multiselects ---
+        cols = st.columns([3,3])
+
+        with cols[0]:
+            with st.container(border=True):
+                activity_selected = st.toggle("Select Activity Level", key='ts_activitylevel')
+
+        with cols[1]:
+            with st.container(border=True):
+                price_selected = st.toggle("Select Price Range", key='ts_pricerange')
+
+        # --- MOVED UP: Render price slider before multiselects ---
+        pricelist_full = data3['Price_int'].drop_duplicates().tolist()
+        if 0 in pricelist_full:
+            pricelist_full.remove(0)
+
+        min_absolute = min(pricelist_full)
+        max_absolute = max(pricelist_full)
+
+        if price_selected:
+            with st.container(border=True):
+                min_price, max_price = st.slider(
+                    'Trip Price',
+                    min_value=min_absolute,
+                    max_value=max_absolute,
+                    value=st.session_state.get('ts_priceslider', (min_absolute, max_absolute)),
+                    label_visibility="collapsed",
+                    format="$%d",
+                    key='ts_priceslider'
+                )
+            st.markdown("Note: US - Puerto Rico price does not include flight.")
+        else:
+            min_price, max_price = min_absolute, max_absolute
+
+        # --- NEW: Apply price filter to data3 before building multiselect options ---
+        data3_pricefiltered = data3[
+            (data3['Price_int'] == 0) |
+            ((data3['Price_int'] >= min_price) & (data3['Price_int'] <= max_price))
+        ]
+
         active_filters = {}
         for key, col in filter_map.items():
             if st.session_state.get(key):
                 active_filters[col] = st.session_state[key]
-        
+
         def get_options_for(target_col, data):
             filtered = data.copy()
             for col, values in active_filters.items():
-                if col != target_col:  # <-- skip the widget's own filter
+                if col != target_col:
                     filtered = filtered.loc[filtered[col].isin(values)]
             return filtered[target_col].sort_values().unique().tolist()
-        
+
         with col1:
-            _tripname_opts = get_options_for('Trip Name', data3)
+            _tripname_opts = get_options_for('Trip Name', data3_pricefiltered)
             tripname = st.multiselect(
                 label='Trip Name',
                 options=_tripname_opts,
@@ -183,9 +216,9 @@ if tab == "Trip Selector":
                 placeholder='',
                 key='ts_tripname'
             )
-        
+
         with col2:
-            _continent_opts = get_options_for('Continent', data3)
+            _continent_opts = get_options_for('Continent', data3_pricefiltered)
             continent = st.multiselect(
                 label='Continent',
                 options=_continent_opts,
@@ -193,9 +226,9 @@ if tab == "Trip Selector":
                 placeholder='',
                 key='ts_continent'
             )
-        
+
         with col1:
-            _triptype_opts = get_options_for('Trip Type', data3)
+            _triptype_opts = get_options_for('Trip Type', data3_pricefiltered)
             triptype = st.multiselect(
                 label='Trip Type',
                 options=_triptype_opts,
@@ -203,9 +236,9 @@ if tab == "Trip Selector":
                 placeholder='',
                 key='ts_triptype'
             )
-        
+
         with col2:
-            _numdays_opts = get_options_for('Number of Days', data3)
+            _numdays_opts = get_options_for('Number of Days', data3_pricefiltered)
             numdays = st.multiselect(
                 label='Number of Days',
                 options=_numdays_opts,
@@ -214,44 +247,27 @@ if tab == "Trip Selector":
                 key='ts_numdays'
             )
 
-
         ratings_selected = False
         ratings = []
-
-        cols = st.columns([3,3])
-
-        price_selected = False
-
-
-        with cols[0]:
-            with st.container(border=True):
-                activity_selected = st.toggle("Select Activity Level",  key='ts_activitylevel')
-
-        with cols[1]:
-
-            with st.container(border=True):
-
-                price_selected = st.toggle("Select Price Range", key='ts_pricerange')
 
         if activity_selected:
 
             cols = st.columns([12,12,12,12,12])
 
             i = 0
-			
+
             ratingcols = ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']
             ratingcols_str = ['Nightlife_str', 'Physical Activity_str', 'Relaxation_str', 'Nature_str', 'Culture_str']
-			
+
             for col in ratingcols_str:
 
                 with cols[i]:
-
-                    options = get_options_for(col, data3)
+                    options = get_options_for(col, data3_pricefiltered)
                     options.sort()
                     rating = st.multiselect(label=ratingcols[i], options=options, placeholder='', key=f"ts_rating_{col}")
 
                 ratings.append(rating)
-  
+
                 checkval = ratings[i]
 
                 data3[f'keeprating{i+1}'] = data3[col].isin(checkval)
@@ -266,16 +282,14 @@ if tab == "Trip Selector":
     filtered_data = data3
 
     if (filtertype == 'Filter (keep trips that share ALL selected criteria)') and ratings_selected:
-
         filtered_data = data3[(
                              ((data3['Continent'].isin(continent) | (not continent))
                              & (data3['Trip Name'].isin(tripname) | (not tripname))
                              & (data3['Number of Days'].isin(numdays) | (not numdays))
                              & (data3['Trip Type'].isin(triptype) | (not triptype))
                              )
-                             & (data3['keeprating_and'] == 1) 
+                             & (data3['keeprating_and'] == 1)
                              )]
-
 
     elif (filtertype == 'Compare (show trips that have ANY of the selected criteria)') and ratings_selected:
         filtered_data = data3[(
@@ -287,7 +301,6 @@ if tab == "Trip Selector":
                              )]
 
     elif (filtertype == 'Filter (keep trips that share ALL selected criteria)') and not ratings_selected:
-
         filtered_data = data3[(
                              ((data3['Continent'].isin(continent) | (not continent))
                              & (data3['Trip Name'].isin(tripname) | (not tripname))
@@ -295,7 +308,6 @@ if tab == "Trip Selector":
                              & (data3['Trip Type'].isin(triptype) | (not triptype))
                              )
                             )]
-
 
     elif (filtertype == 'Compare (show trips that have ANY of the selected criteria)') and not ratings_selected:
         filtered_data = data3[(
@@ -305,56 +317,23 @@ if tab == "Trip Selector":
                              | (data3['Trip Type'].isin(triptype))
                              )]
 
-
+    # --- Price slider final filtering (unchanged, uses already-rendered slider values) ---
     prices = filtered_data['Price_int']
     prices_full = data3['Price_int']
 
     pricelist = prices.drop_duplicates().tolist()
-
     if 0 in pricelist:
         pricelist.remove(0)
 
     pricelist_full = prices_full.drop_duplicates().tolist()
-
     if 0 in pricelist_full:
         pricelist_full.remove(0)
 
     filtered_data_final = filtered_data
 
-    if len(pricelist) > 1 or filtertype == 'Compare (show trips that have ANY of the selected criteria)':
-
-        if price_selected:
-
-            if len(pricelist) != 0:
-
-                min_absolute = min(pricelist)
-                max_absolute = max(pricelist)
-
-            else:
-
-                min_absolute = min(pricelist_full)
-                max_absolute = max(pricelist_full)
-
-    
-            with cols_main[0]:  
-              
-                 with st.container(border=True):
-
-                     min_price, max_price = st.slider(
-                         'Trip Price',
-                         min_value=min_absolute,
-                         max_value=max_absolute,
-                         value = (min_absolute, max_absolute),
-                         label_visibility="collapsed",
-                         format="$%d",
-                         key='ts_priceslider'
-                     )
-                 st.markdown("""Note: US - Puerto Rico price does not include flight.""")
-
-
-            filtered_data['in_pricerange'] = (filtered_data['Price_int'] >= min_price) & (filtered_data['Price_int'] <= max_price)
-
-            filtered_data_final = filtered_data[filtered_data['in_pricerange']]
+    if price_selected:
+        filtered_data['in_pricerange'] = (filtered_data['Price_int'] >= min_price) & (filtered_data['Price_int'] <= max_price)
+        filtered_data_final = filtered_data[filtered_data['in_pricerange']]
 
     filtered_data_unique = filtered_data_final.drop_duplicates(["Trip Name"])
 
@@ -365,8 +344,7 @@ if tab == "Trip Selector":
         for str in ['Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture']:
              filtered_data_unique_final = filtered_data_unique_final.rename(columns={f'{str}_str': str})
     else:
-       filtered_data_unique_final = filtered_data_unique[['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days']]
-
+        filtered_data_unique_final = filtered_data_unique[['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days']]
 
     with cols_main[1]:
         with st.container(border=True):
@@ -376,7 +354,7 @@ if tab == "Trip Selector":
                 sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture'], placeholder='', key='ts_sortselect_ratings')
             else:
                 sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days'], placeholder='', key='ts_sortselect_noratings')
-				
+
             if not sortselect:
                 filtered_data_unique_final = filtered_data_unique_final.sort_values(['Trip Name'])
             else:
@@ -386,9 +364,9 @@ if tab == "Trip Selector":
                 {'selector': 'th', 'props': [('background-color', '#8B0000'), ('color', 'white')]}
             ])
             st.table(
-            styled_df,
-            hide_index=True,
-            height=800
+                styled_df,
+                hide_index=True,
+                height=800
             )
 
     st.session_state["filtered_data"] = filtered_data_final
@@ -402,25 +380,24 @@ if tab == "Trip Selector":
     else:
         cols = st.columns([1,2])
         with cols[0]:
-
             tripname = st.multiselect('Select trips', sorted(data['Trip Name'].unique().tolist()), placeholder='', key='ts_chart_tripname')
-        
+
         data_want = data[data['Trip Name'].isin(tripname)].drop_duplicates('Trip Name').sort_values(['Trip Name'])
 
     cols_tab2 = st.columns(3)
-    
+
     for i in range(len(data_want)):
 
         row = data_want.iloc[i]
 
         values = row[categories].tolist()
         trip = row['Trip Name']
-    
+
         values += values[:1]
         categories_closed = categories + categories[:1]
 
         fig = go.Figure()
-    
+
         fig.add_trace(go.Scatterpolar(
             r=values,
             theta=categories_closed,
@@ -429,19 +406,19 @@ if tab == "Trip Selector":
             fillcolor='rgba(139, 0, 0, 0.2)',
             name='Observation'
         ))
-    
+
         fig.update_layout(
             polar=dict(radialaxis=dict(visible=True, showticklabels=False)),
             showlegend=False,
             width=400,
             height=400
         )
-	
+
         if i % 3 < 3:
             with cols_tab2[i % 3]:
                 st.write(row['Trip Name'])
                 st.plotly_chart(fig, key=f'{trip}1')
-                          
+
         else:
             cols_tab2 = st.columns(3)
             with cols_tab2[i % 3]:
