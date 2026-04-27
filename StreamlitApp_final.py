@@ -429,7 +429,7 @@ if tab == "Itinerary Selector":
 
     with cols[0]:
 
-        selecttype = st.selectbox('Which itineraries would you like to view?', ['Trip Selector', 'Choose your own'], placeholder='')
+        selecttype = st.selectbox('Which itineraries would you like to view?', ['Choose from Trip Selector', 'Choose your own'], placeholder='')
 
         if selecttype == 'Trip Selector':
             data_itin = st.session_state["filtered_data"]
