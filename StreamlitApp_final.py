@@ -107,7 +107,7 @@ if tab == "Trip Selector":
             date_list.append(date)
 
         with st.container(border=True):
-            dates_nogo = st.multiselect(label="Select dates you cannot attend", options=date_list, placeholder='', key='ts_datesnogo')
+            dates_nogo = st.multiselect(label="Select dates you cannot attend", options=date_list, placeholder='', key='ts_datesnogo', filter_mode=None)
             st.write("Note: Panama Random Walks website states August 26 - 31; itinerary states August 27 - September 3.")
 
         data['nogo'] = 0
