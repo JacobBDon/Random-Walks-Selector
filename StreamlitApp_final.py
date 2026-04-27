@@ -234,7 +234,7 @@ if tab == "Trip Selector":
                 options=_triptype_opts,
                 default=[v for v in st.session_state.get('ts_triptype', []) if v in _triptype_opts],
                 placeholder='',
-                key='ts_triptype'
+                key='ts_triptype',
                 filter_mode=None
             )
 
