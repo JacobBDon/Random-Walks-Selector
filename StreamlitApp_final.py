@@ -127,7 +127,8 @@ if tab == "Trip Selector":
                 options=sorted(_nogo_opts),
                 default=[v for v in st.session_state.get('ts_countriesnogo', []) if v in _nogo_opts],
                 placeholder='',
-                key='ts_countriesnogo'
+                key='ts_countriesnogo',
+	            filter_mode=None
             )
 
         for trip in countries_nogo:
@@ -211,7 +212,8 @@ if tab == "Trip Selector":
                 options=_tripname_opts,
                 default=[v for v in st.session_state.get('ts_tripname', []) if v in _tripname_opts],
                 placeholder='',
-                key='ts_tripname'
+                key='ts_tripname',
+                filter_mode=None
             )
 
         with col2:
@@ -221,7 +223,8 @@ if tab == "Trip Selector":
                 options=_continent_opts,
                 default=[v for v in st.session_state.get('ts_continent', []) if v in _continent_opts],
                 placeholder='',
-                key='ts_continent'
+                key='ts_continent',
+                filter_mode=None
             )
 
         with col1:
@@ -232,6 +235,7 @@ if tab == "Trip Selector":
                 default=[v for v in st.session_state.get('ts_triptype', []) if v in _triptype_opts],
                 placeholder='',
                 key='ts_triptype'
+                filter_mode=None
             )
 
         with col2:
@@ -241,7 +245,8 @@ if tab == "Trip Selector":
                 options=_numdays_opts,
                 default=[v for v in st.session_state.get('ts_numdays', []) if v in _numdays_opts],
                 placeholder='',
-                key='ts_numdays'
+                key='ts_numdays',
+                filter_mode=None
             )
 
         ratings_selected = False
@@ -376,7 +381,7 @@ if tab == "Trip Selector":
     else:
         cols = st.columns([1,2])
         with cols[0]:
-            tripname = st.multiselect('Select trips', sorted(data['Trip Name'].unique().tolist()), placeholder='', key='ts_chart_tripname')
+            tripname = st.multiselect('Select trips', sorted(data['Trip Name'].unique().tolist()), placeholder='', key='ts_chart_tripname', filter_mode=None)
 
         data_want = data[data['Trip Name'].isin(tripname)].drop_duplicates('Trip Name').sort_values(['Trip Name'])
 
@@ -439,7 +444,7 @@ if tab == "Itinerary Selector":
         trips = data_itin['Trip Name'].unique().tolist()
 
         placeh = 'Select trip to view itinerary'
-        countries = st.multiselect('Select trips', sorted(trips), placeholder=placeh, key='trip_multiselect')
+        countries = st.multiselect('Select trips', sorted(trips), placeholder=placeh, key='trip_multiselect', filter_mode=None)
         data_itin = data_itin[data_itin['Trip Name'].isin(countries)]
 
     
@@ -639,7 +644,7 @@ if tab == "Easy Ranker":
         if 'trip_multiselect' not in st.session_state and '_saved_trip_multiselect' in st.session_state:
             st.session_state['trip_multiselect'] = st.session_state['_saved_trip_multiselect']
        
-        countries = st.multiselect('Select trips', sorted(trips), placeholder='Select trip to include in ranking', key='trip_multiselect')
+        countries = st.multiselect('Select trips', sorted(trips), placeholder='Select trip to include in ranking', key='trip_multiselect', filter_mode=None)
         
         data_itin = data_itin[data_itin['Trip Name'].isin(countries)]
  
