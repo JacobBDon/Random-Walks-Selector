@@ -352,9 +352,9 @@ if tab == "Trip Selector":
 
             st.markdown('**Your trips:**')
             if ratings_selected:
-                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture'], placeholder='', key='ts_sortselect_ratings')
+                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days', 'Nightlife', 'Physical Activity', 'Relaxation', 'Nature', 'Culture'], placeholder='', key='ts_sortselect_ratings', filter_mode=None)
             else:
-                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days'], placeholder='', key='ts_sortselect_noratings')
+                sortselect = st.selectbox('**Sort by:**', options=['Trip Name', 'Continent', 'Price', 'Start Date', 'End Date', 'Days'], placeholder='', key='ts_sortselect_noratings', filter_mode=None)
 
             if not sortselect:
                 filtered_data_unique_final = filtered_data_unique_final.sort_values(['Trip Name'])
